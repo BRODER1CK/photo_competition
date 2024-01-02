@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{title}}</title>
+	<link type="text/css" href="{% static 'web_site/css/styles.css' %}" rel="stylesheet" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="shortcut icon" href="{% static 'web_site/images/main.ico' %}" type="image/x-icon"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<table border=0 cellpadding="0" cellspacing="0">
+<tr><td valign=top>
+{% block mainmenu %}
+                   <div>
+                            <ul>
+								{% if user.is_authenticated and request.path  == '/profile/' %}
+								<li><a href="{% url 'web_site:home' %}">Главная страница</a> | <a href="{% url 'web_site:logout' %}">Выйти</a></li>
+								{% elif user.is_authenticated and request.path  == '/' %}
+								<li><a href="{% url 'web_site:profile' %}">Личный кабинет</a> | <a href="{% url 'web_site:logout' %}">Выйти</a></li>
+								{% elif user.is_authenticated %}
+								<li><a href="{% url 'web_site:home' %}">Главная страница</a> | <a href="{% url 'web_site:profile' %}">Личный кабинет</a> | <a href="{% url 'web_site:logout' %}">Выйти</a></li>
+								{% elif request.path  == '/' %}
+								<li><a href="{% url 'social:begin' 'vk-oauth2' %}"><img src="/media/social-auth/vk.png"><br>Войти</a></li>
+								{% else %}
+								<li><a href="{% url 'web_site:home' %}">Главная страница</a> <br> <a href="{% url 'social:begin' 'vk-oauth2' %}"><img src="/media/social-auth/vk.png"><br>Войти</a></li>
+								{% endif %}
+                            </ul>
+                   </div>
+{% endblock mainmenu %}
+<table border=0 cellpadding="0" cellspacing="0">
+<tr>
+	<td valign="top">
+	</td>
+<td valign="top">
+
+{% block content %}
+{% endblock %}
+{% block navigation %}{% endblock %}
+
+</td></tr></table>
+</td></tr>
+<tr><td valign=top>
+		<p>Salt&Pepper</p>
+</td></tr></table>
+</body>
+</html>

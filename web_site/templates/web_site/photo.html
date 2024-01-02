@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{photo.title}}</h1>
+
+<p>Автор: {{ photo.user.username }}</p>
+
+{% if photo.current_photo %}
+<p ><img src="{{photo.current_photo.url}}"></p>
+{% endif %}
+
+{{photo.description|linebreaks}}
+{% endblock %}

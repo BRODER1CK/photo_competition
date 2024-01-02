@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul>
+	{% for p in photos %}
+			<li>
+    <h1>{{p.title}}</h1>
+    <p>Автор: {{ p.user.username }}</p>
+	<p>Дата: {{p.updated_at|date:"d-m-Y H:i:s"}}</p>
+    {% if p.current_photo %}
+    <p><img src="{{p.current_photo.url}}"></p>
+    {% endif %}
+    <p>Количество голосов: {{ p.likes.count }} | Количество комментариев: {{ p.comments.count }}</p>
+    {% autoescape off %}
+	{{p.description|linebreaks|truncatewords:40}}
+    {% endautoescape %}
+			<p><a href="{{ p.get_absolute_url }}">Смотреть фотографию</a></p>
+			</li>
+	{% endfor %}
+</ul>
+{% endblock %}
+
+{% block navigation %}
+{% if page_obj.has_other_pages %}
+<nav>
+    <ul>
+		{% if page_obj.has_previous %}
+        <li>
+                 <a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+        </li>
+        {% endif %}
+
+        {% for p in paginator.page_range %}
+                   {% if page_obj.number == p %}
+        <li>{{ p }}</li>
+                   {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2  %}
+        <li>
+            <a href="?page={{ p }}">{{ p }}</a>
+        </li>
+                   {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li>
+                 <a href="?page={{ page_obj.next_page_number }}">&gt;</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

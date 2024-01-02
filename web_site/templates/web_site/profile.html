@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Личный кабинет</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if user.avatar %}
+    <p ><img src="{{ user.avatar }}">
+    {% else %}
+    <p ><img src="{{ default_image }}">
+    {% endif %}
+    <div>{{ form.non_field_errors }}</div>
+    {% for f in form %}
+    <p><label form="{{ f.id_for_label }}">{{ f.label }}: </label>{{ f }}</p>
+    <div>{{ f.errors }}</div>
+    {% endfor %}
+    <p ><button type="submit">Сохранить</button></p>
+</form>
+    <p><a href="{{ 'add_photo' }}">Добавить фотографию</a></p>
+    <ul>
+        {% for p in photos %}
+        {% if user.id == p.user_id %}
+                <li>
+        <h1>{{p.title}}</h1>
+        {% if p.status == 'P' %}
+        <p>Опубликовано</p>
+        {% elif p.status == 'M' %}
+        <p>Ожидает модерацию</p>
+        {% elif p.status == 'D' %}
+        <p>На удалении</p>
+        {% endif %}
+        <p>Дата: {{p.updated_at|date:"d-m-Y H:i:s"}}</p>
+        {% if p.current_photo %}
+        <p><img src="{{p.current_photo.url}}"></p>
+        {% endif %}
+        {% autoescape off %}
+        {{p.description|linebreaks|truncatewords:40}}
+        {% endautoescape %}
+                <p><a href="{{ p.get_absolute_url }}">Смотреть фотографию</a></p>
+                <p><a href="{{ 'edit_photo' }}/{{ p.id }}/">Изменить фотографию</a></p>
+                {% if p.status == 'P' or p.status == 'M' %}
+                <p><a href="{{ 'delete_photo' }}/{{ p.id }}/">Удалить фотографию</a></p>
+                {% elif p.status == 'D' %}
+                <p><a href="{{ 'restore_photo' }}/{{ p.id }}/">Восстановить фотографию</a></p>
+                {% endif %}
+                </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+
+{% endblock %}
