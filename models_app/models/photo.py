@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.urls import reverse
-from django_fsm import FSMField, transition
+from django_fsm import FSMField
 
 from models_app.models.comment import Comment
 
