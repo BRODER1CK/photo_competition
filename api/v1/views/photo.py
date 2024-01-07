@@ -7,7 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from service_objects.services import ServiceOutcome
 
-from api.v1.docs.photo import CREATE_PHOTO_DOC, SHOW_PHOTO_DOC, LIST_PHOTO_DOC
+from api.v1.docs.photo import CREATE_PHOTO_DOC, SHOW_PHOTO_DOC, LIST_PHOTO_DOC, UPDATE_PHOTO_DOC, DELETE_PHOTO_DOC, \
+    PARTIAL_UPDATE_PHOTO_DOC
 from api.v1.serializers.photo.show import PhotoSerializer
 from api.v1.services.photo.create import PhotoCreateService
 from api.v1.services.photo.delete import PhotoDeleteService
@@ -66,20 +67,23 @@ class RetrieveUpdateDeletePhotoView(APIView):
         outcome = ServiceOutcome(PhotoShowService, kwargs | {'current_user': user})
         return Response(PhotoSerializer(outcome.result).data, status=outcome.response_status)
 
+    @swagger_auto_schema(**UPDATE_PHOTO_DOC)
     def put(self, request, *args, **kwargs):
         user = None
         if request.user.is_authenticated:
             user = request.user
-        outcome = ServiceOutcome(PhotoUpdateService, request.data | kwargs | {'current_user': user})
+        outcome = ServiceOutcome(PhotoUpdateService, request.data.dict() | kwargs | {'current_user': user})
         return Response(PhotoSerializer(outcome.result).data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(**PARTIAL_UPDATE_PHOTO_DOC)
     def patch(self, request, *args, **kwargs):
         user = None
         if request.user.is_authenticated:
             user = request.user
-        outcome = ServiceOutcome(PhotoPartialUpdateService, request.data | kwargs | {'current_user': user})
+        outcome = ServiceOutcome(PhotoPartialUpdateService, request.data.dict() | kwargs | {'current_user': user})
         return Response(PhotoSerializer(outcome.result).data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(**DELETE_PHOTO_DOC)
     def delete(self, request, *args, **kwargs):
         user = None
         if request.user.is_authenticated:

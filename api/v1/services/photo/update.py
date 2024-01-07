@@ -24,12 +24,12 @@ class PhotoUpdateService(ServiceWithResult):
     def update_photo(self):
         photo = self.photo()
         if self.cleaned_data.get('title'):
-            photo.title = self.cleaned_data.get['title']
+            photo.title = self.cleaned_data['title']
         if self.cleaned_data.get('description'):
-            photo.description = self.cleaned_data.get['description']
+            photo.description = self.cleaned_data['description']
         if self.cleaned_data.get('current_photo'):
             photo.previous_photo = photo.current_photo
-            photo.current_photo = self.cleaned_data.get['current_photo']
+            photo.current_photo = self.cleaned_data['current_photo']
         photo.save()
         return photo
 

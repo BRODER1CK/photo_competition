@@ -1,6 +1,9 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.urls import reverse
 from django_fsm import FSMField, transition
+
+from models_app.models.comment import Comment
 
 
 class PublishedManager(models.Manager):
@@ -19,10 +22,11 @@ class Photo(models.Model):
     status = FSMField(choices=STATUS_CHOICES, default='M', verbose_name='Статус')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
-    description = models.TextField(blank=True, verbose_name='Описание')
-    current_photo = models.ImageField(upload_to='photos/%Y/%m/%d', default=None, blank=True, null=True, verbose_name='Фотография')
+    description = models.TextField(verbose_name='Описание')
+    current_photo = models.ImageField(upload_to='photos/%Y/%m/%d', verbose_name='Фотография')
     previous_photo = models.ImageField(blank=True, null=True, verbose_name='Предыдущая фотография')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='photos', related_query_name='photo', verbose_name='Автор')
+    comments = GenericRelation(Comment)
 
     objects = models.Manager()
     published = PublishedManager()

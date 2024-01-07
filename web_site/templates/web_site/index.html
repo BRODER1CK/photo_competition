@@ -10,7 +10,6 @@
     {% if p.current_photo %}
     <p><img src="{{p.current_photo.url}}"></p>
     {% endif %}
-    <p>Количество голосов: {{ p.likes.count }} | Количество комментариев: {{ p.comments.count }}</p>
     {% autoescape off %}
 	{{p.description|linebreaks|truncatewords:40}}
     {% endautoescape %}
