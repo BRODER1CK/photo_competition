@@ -25,7 +25,11 @@ class Photo(models.Model):
     description = models.TextField(verbose_name='Описание')
     current_photo = models.ImageField(upload_to='photos/%Y/%m/%d', verbose_name='Фотография')
     previous_photo = models.ImageField(blank=True, null=True, verbose_name='Предыдущая фотография')
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='photos', related_query_name='photo', verbose_name='Автор')
+    user = models.ForeignKey('User',
+                             on_delete=models.CASCADE,
+                             related_name='photos',
+                             related_query_name='photo',
+                             verbose_name='Автор')
     comments = GenericRelation(Comment)
 
     objects = models.Manager()

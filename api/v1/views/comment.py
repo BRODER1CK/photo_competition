@@ -32,6 +32,7 @@ class ListCommentView(APIView):
             }
         )
 
+
 class CreateCommentView(APIView):
     serializer_class = CreateCommentSerializer
     parser_classes = [MultiPartParser]
@@ -42,6 +43,7 @@ class CreateCommentView(APIView):
         outcome = ServiceOutcome(CommentCreateService,
                                  request.POST.dict() | {'current_user': request.user})
         return Response(ListCommentSerializer(outcome.result).data, status=status.HTTP_200_OK)
+
 
 class UpdateDeleteCommentView(APIView):
     serializer_class = ListCommentSerializer

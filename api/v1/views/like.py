@@ -1,4 +1,3 @@
-from django import forms
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -22,14 +21,8 @@ class ListLikeView(APIView):
 
     @swagger_auto_schema(**LIST_LIKE_DOC)
     def get(self, request, *args, **kwargs):
-        outcome = ServiceOutcome(LikeListService, request.GET.dict())
-        return Response(
-            {
-                "results": ListLikeSerializer(
-                    outcome.result.object_list, many=True
-                ).data,
-            }
-        )
+        outcome = ServiceOutcome(LikeListService, kwargs)
+        return Response(ListLikeSerializer(outcome.result).data, status=outcome.response_status)
 
 
 class CreateDeleteLikeView(APIView):

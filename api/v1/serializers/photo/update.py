@@ -8,6 +8,7 @@ class UpdatePhotoSerializer(serializers.ModelSerializer):
         model = Photo
         fields = ['title', 'description', 'current_photo']
 
+
 class PartialUpdatePhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo

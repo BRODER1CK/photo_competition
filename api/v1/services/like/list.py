@@ -5,9 +5,9 @@ from service_objects.services import ServiceWithResult
 from models_app.models.like import Like
 from models_app.models.photo import Photo
 
+
 class LikeListService(ServiceWithResult):
     id = forms.IntegerField(min_value=1)
-
 
     def process(self):
         self.result = self.likes()

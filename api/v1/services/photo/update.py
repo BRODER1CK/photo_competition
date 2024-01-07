@@ -44,6 +44,7 @@ class PhotoUpdateService(ServiceWithResult):
             self.add_error('user', PermissionDenied(f'You do not have permission'))
             self.response_status = status.HTTP_404_NOT_FOUND
 
+
 class PhotoPartialUpdateService(PhotoUpdateService):
     title = forms.CharField(required=False, max_length=255)
     description = forms.CharField(required=False)

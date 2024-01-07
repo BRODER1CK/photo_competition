@@ -7,6 +7,7 @@ from models_app.models.user import User
 
 admin.site.register(User, UserAdmin)
 
+
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
     fields = ['title', 'status', 'description', 'current_photo', 'previous_photo', 'get_photo', 'user']
