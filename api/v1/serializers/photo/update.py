@@ -7,6 +7,7 @@ class UpdatePhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
         fields = ['title', 'description', 'current_photo']
+        extra_kwargs = {'description': {'required': True}}
 
 
 class PartialUpdatePhotoSerializer(serializers.ModelSerializer):
@@ -14,5 +15,4 @@ class PartialUpdatePhotoSerializer(serializers.ModelSerializer):
         model = Photo
         fields = ['title', 'description', 'current_photo']
         extra_kwargs = {'title': {'required': False},
-                        'description': {'required': False},
                         'current_photo': {'required': False}}

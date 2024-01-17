@@ -27,9 +27,9 @@ class PhotoShowService(ServiceWithResult):
         return self.cleaned_data.get('current_user')
 
     def validate_user(self):
-        if self.user() and self.user().is_superuser is False and self.photo().user != self.user():
+        if self.user() and not self.user().is_superuser and self.photo().status != 'P' and self.photo().user != self.user():
             self.add_error('id', ObjectDoesNotExist(f'Photo with id = {self.cleaned_data["id"]} does not exist'))
             self.response_status = status.HTTP_404_NOT_FOUND
-        elif self.photo().status != 'P' and not self.user():
+        elif not self.user() and self.photo().status != 'P':
             self.add_error('id', ObjectDoesNotExist(f'Photo with id = {self.cleaned_data["id"]} does not exist'))
             self.response_status = status.HTTP_404_NOT_FOUND

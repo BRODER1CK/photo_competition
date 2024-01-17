@@ -8,7 +8,7 @@ from models_app.models.user import User
 
 class PhotoCreateService(ServiceWithResult):
     title = forms.CharField(max_length=255)
-    description = forms.CharField()
+    description = forms.CharField(required=False)
     current_photo = forms.ImageField()
     current_user = ModelField(User)
 
@@ -17,12 +17,8 @@ class PhotoCreateService(ServiceWithResult):
         return self
 
     def create_photo(self):
-        new_photo = Photo.objects.create(
+        return Photo.objects.create(
             title=self.cleaned_data['title'],
-            description=self.cleaned_data['description'],
+            description=self.cleaned_data.get('description'),
             current_photo=self.cleaned_data['current_photo'],
             user=self.cleaned_data['current_user'])
-        return new_photo
-
-    def user(self):
-        return self.cleaned_data.get('current_user')

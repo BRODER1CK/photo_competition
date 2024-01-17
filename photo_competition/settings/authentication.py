@@ -16,7 +16,7 @@ DEFAULT_USER_IMAGE = MEDIA_URL + 'web_site/default.png'
 
 SOCIAL_AUTH_VK_OAUTH2_KEY = config('SOCIAL_AUTH_VK_OAUTH2_KEY')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = config('SOCIAL_AUTH_VK_OAUTH2_SECRET')
-SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['photos']
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['photos', 'email']
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 SOCIAL_AUTH_PIPELINE = (
@@ -29,5 +29,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
-    'utils.pipeline.get_avatar'
+    'utils.pipeline.get_avatar',
+    'utils.pipeline.get_email'
 )

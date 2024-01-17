@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
 from service_objects.fields import ModelField
@@ -10,7 +11,8 @@ from models_app.models.user import User
 
 class CommentUpdateService(ServiceWithResult):
     text = forms.CharField(max_length=255)
-    id = forms.IntegerField(min_value=1)
+    content_type = forms.CharField(max_length=255)
+    object_id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
 
     def process(self):
@@ -27,7 +29,8 @@ class CommentUpdateService(ServiceWithResult):
         return comment
 
     def comment(self):
-        return Comment.objects.get(id=self.cleaned_data['id'])
+        return Comment.objects.get(content_type=ContentType.objects.get_for_model(self.cleaned_data['content_type']),
+                                   object_id=self.cleaned_data['object_id'])
 
     def user(self):
         return self.cleaned_data.get('current_user')

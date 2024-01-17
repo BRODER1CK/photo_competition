@@ -7,23 +7,21 @@ from models_app.models.photo import Photo
 from models_app.models.user import User
 
 
-class CreateDeleteLikeService(ServiceWithResult):
-    id = forms.IntegerField(min_value=1)
+class LikeDeleteService(ServiceWithResult):
+    photo_id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
 
     def process(self):
-        self.result = self.like()
+        self.result = self.unlike()
         return self
 
-    def like(self):
-        try:
-            like = Like.objects.get(user=self.user(), photo=self.photo())
-            return like.delete()
-        except:
-            return Like.objects.create(user=self.user(), photo=self.photo())
+    def unlike(self):
+        like = Like.objects.filter(user=self.user(), photo=self.photo())
+        like.delete()
+        return Like.objects.none()
 
     def user(self):
         return self.cleaned_data.get('current_user')
 
     def photo(self):
-        return Photo.objects.get(id=self.cleaned_data['id'])
+        return Photo.objects.get(id=self.cleaned_data['photo_id'])

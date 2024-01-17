@@ -3,7 +3,7 @@ from rest_framework import serializers
 from models_app.models.comment import Comment
 
 
-class ListCommentSerializer(serializers.ModelSerializer):
+class ShowCommentSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
 
     class Meta:

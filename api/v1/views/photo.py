@@ -18,10 +18,10 @@ from api.v1.services.photo.update import PhotoUpdateService, PhotoPartialUpdateS
 from utils.pagination import CustomPagination
 
 
-class ListPhotoView(APIView):
+class ListCreatePhotoView(APIView):
     serializer_class = ShowPhotoSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
     parser_classes = [MultiPartParser]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @swagger_auto_schema(**LIST_PHOTO_DOC)
     def get(self, request, *args, **kwargs):
@@ -41,12 +41,6 @@ class ListPhotoView(APIView):
                 ).data,
             }
         )
-
-
-class CreatePhotoView(APIView):
-    serializer_class = ShowPhotoSerializer
-    parser_classes = [MultiPartParser]
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @swagger_auto_schema(**CREATE_PHOTO_DOC)
     def post(self, request: Request, *args, **kwargs):

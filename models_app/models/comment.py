@@ -16,7 +16,6 @@ class Comment(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
-    parent_comment = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     comments = GenericRelation('self')
 
     class Meta:

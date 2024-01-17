@@ -2,10 +2,16 @@ from django.contrib import admin, messages
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
 
+from models_app.models.comment import Comment
 from models_app.models.photo import Photo
 from models_app.models.user import User
 
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Photo)

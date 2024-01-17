@@ -1,21 +1,24 @@
+from django import forms
+from django.contrib.contenttypes.models import ContentType
 from service_objects.services import ServiceWithResult
 
-from models_app.models.photo import Photo
 from models_app.models.comment import Comment
+from django.apps import apps
 
 
 class CommentListService(ServiceWithResult):
+    content_type = forms.ChoiceField(choices=(('Photo', 'Photo'), ('Comment', 'Comment')), required=False)
+    object_id = forms.IntegerField(min_value=1)
+
     def process(self):
         self.result = self.comments()
         return self
 
     def comments(self):
-        object_id = self.cleaned_data['object_id']
-        content_type = self.cleaned_data['content_type']
-        if content_type == 'photo':
-            photo = Photo.objects.get(id=object_id)
-            comments = Comment.objects.filter(content_object=photo)
-        elif content_type == 'comment':
-            comment = Comment.objects.get(id=object_id)
-            comments = Comment.objects.filter(content_object=comment)
-        return comments
+        if self.cleaned_data['content_type']:
+            return Comment.objects.filter(object_id=self.cleaned_data['object_id'],
+                                      content_type=ContentType.objects.get_for_model(
+                                          apps.get_model('models_app',
+                                                         self.cleaned_data['content_type'])))
+        else:
+            return Comment.objects.filter(object_id=self.cleaned_data['object_id'])

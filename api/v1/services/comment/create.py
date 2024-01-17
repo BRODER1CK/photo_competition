@@ -1,14 +1,17 @@
 from django import forms
+from django.contrib.contenttypes.models import ContentType
 from service_objects.fields import ModelField
 from service_objects.services import ServiceWithResult
 
 from models_app.models.comment import Comment
-from models_app.models.photo import Photo
 from models_app.models.user import User
+from django.apps import apps
 
 
 class CommentCreateService(ServiceWithResult):
     text = forms.CharField(max_length=255)
+    content_type = forms.ChoiceField(choices=(('Photo', 'Photo'), ('Comment', 'Comment')))
+    object_id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
 
     def process(self):
@@ -16,14 +19,9 @@ class CommentCreateService(ServiceWithResult):
         return self
 
     def create_comment(self):
-        text = self.cleaned_data['text']
-        content_type = self.cleaned_data['content_type']
-        object_id = self.cleaned_data['object_id']
-        user = self.cleaned_data['current_user']
-        if content_type == 'photo':
-            photo = Photo.objects.get(id=object_id)
-            comment = Comment.objects.create(user=user, text=text, content_object=photo)
-        elif content_type == 'comment':
-            parent_comment = Comment.objects.get(id=object_id)
-            comment = Comment.objects.create(user=user, text=text, content_object=parent_comment)
-        return comment
+        return Comment.objects.create(user=self.cleaned_data['current_user'],
+                                      text=self.cleaned_data['text'],
+                                      content_type=ContentType.objects.get_for_model(
+                                          apps.get_model('models_app',
+                                                         self.cleaned_data['content_type'])),
+                                      object_id=self.cleaned_data['object_id'])

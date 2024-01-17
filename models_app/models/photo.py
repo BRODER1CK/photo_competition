@@ -22,7 +22,7 @@ class Photo(models.Model):
     status = FSMField(choices=STATUS_CHOICES, default='M', verbose_name='Статус')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
     current_photo = models.ImageField(upload_to='photos/%Y/%m/%d', verbose_name='Фотография')
     previous_photo = models.ImageField(blank=True, null=True, verbose_name='Предыдущая фотография')
     user = models.ForeignKey('User',
