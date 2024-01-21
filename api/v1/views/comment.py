@@ -48,7 +48,8 @@ class UpdateDeleteCommentView(APIView):
 
     @swagger_auto_schema(**UPDATE_COMMENT_DOC)
     def patch(self, request, *args, **kwargs):
-        return self.put(self, request, *args, **kwargs)
+        outcome = ServiceOutcome(CommentUpdateService, request.data.dict() | kwargs | {'current_user': request.user})
+        return Response(ListCommentSerializer(outcome.result).data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**DELETE_COMMENT_DOC)
     def delete(self, request, *args, **kwargs):

@@ -36,8 +36,8 @@ class Photo(models.Model):
     published = PublishedManager()
 
     class Meta:
-        verbose_name = 'Фотографию'
-        verbose_name_plural = 'Фотографии'
+        verbose_name = 'Photo'
+        verbose_name_plural = 'Photos'
         db_table = 'photos'
         ordering = ['-updated_at']
         indexes = [

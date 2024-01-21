@@ -5,6 +5,7 @@ from models_app.models.comment import Comment
 
 class ShowCommentSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -14,3 +15,6 @@ class ShowCommentSerializer(serializers.ModelSerializer):
         comments = comment.comments.all()
         serializer = self.__class__(comments, many=True)
         return serializer.data
+
+    def get_content_type(self, obj):
+        return obj.content_type.name

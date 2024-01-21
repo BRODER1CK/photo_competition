@@ -10,8 +10,8 @@ class CommentShowService(ServiceWithResult):
     id = forms.IntegerField(min_value=1)
 
     def process(self):
-        self.result = self.comments()
+        self.result = self.comment()
         return self
 
-    def comments(self):
+    def comment(self):
         return Comment.objects.get(id=self.cleaned_data['id'])

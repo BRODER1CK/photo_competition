@@ -1,5 +1,6 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
@@ -22,6 +23,10 @@ class ListCreatePhotoView(APIView):
     serializer_class = ShowPhotoSerializer
     parser_classes = [MultiPartParser]
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['author', 'title', 'description']
+    ordering_fields = ['likes_count', 'publication_date', 'comments_count']
+
 
     @swagger_auto_schema(**LIST_PHOTO_DOC)
     def get(self, request, *args, **kwargs):

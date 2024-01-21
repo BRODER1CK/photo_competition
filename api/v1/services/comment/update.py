@@ -11,8 +11,7 @@ from models_app.models.user import User
 
 class CommentUpdateService(ServiceWithResult):
     text = forms.CharField(max_length=255)
-    content_type = forms.CharField(max_length=255)
-    object_id = forms.IntegerField(min_value=1)
+    id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
 
     def process(self):
@@ -24,13 +23,12 @@ class CommentUpdateService(ServiceWithResult):
     def update_comment(self):
         comment = self.comment()
         if self.cleaned_data.get('text'):
-            comment.text = self.cleaned_data.get['text']
+            comment.text = self.cleaned_data['text']
         comment.save()
         return comment
 
     def comment(self):
-        return Comment.objects.get(content_type=ContentType.objects.get_for_model(self.cleaned_data['content_type']),
-                                   object_id=self.cleaned_data['object_id'])
+        return Comment.objects.get(id=self.cleaned_data['id'])
 
     def user(self):
         return self.cleaned_data.get('current_user')

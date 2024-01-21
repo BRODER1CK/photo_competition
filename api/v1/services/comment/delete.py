@@ -10,8 +10,7 @@ from models_app.models.user import User
 
 
 class CommentDeleteService(ServiceWithResult):
-    content_type = forms.CharField(max_length=255)
-    object_id = forms.IntegerField(min_value=1)
+    id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
 
     def process(self):
@@ -25,8 +24,7 @@ class CommentDeleteService(ServiceWithResult):
         return comment.delete()
 
     def comment(self):
-        return Comment.objects.get(content_type=ContentType.objects.get_for_model(self.cleaned_data['content_type']),
-                                   object_id=self.cleaned_data['object_id'])
+        return Comment.objects.get(id=self.cleaned_data['id'])
 
     def user(self):
         return self.cleaned_data.get('current_user')

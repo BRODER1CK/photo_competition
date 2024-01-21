@@ -53,19 +53,5 @@ DELETE_COMMENT_DOC = {
     "tags": ["comment"],
     "operation_id": "Comment delete",
     "operation_description": "Delete comment",
-    "manual_parameters": [
-        openapi.Parameter(
-            name="content_type",
-            in_=openapi.IN_QUERY,
-            description="Content type",
-            type=openapi.TYPE_STRING,
-        ),
-        openapi.Parameter(
-            name="object_id",
-            in_=openapi.IN_QUERY,
-            description="Object id",
-            type=openapi.TYPE_INTEGER,
-        ),
-    ],
     "responses": {200: openapi.Response("Success", None)}
 }
