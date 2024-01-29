@@ -4,7 +4,7 @@ from api.v1.views.photo import RetrieveUpdateDeletePhotoView, ListCreatePhotoVie
 
 from django.urls import path
 
-from api.v1.views.user import RetrieveUpdateUserView
+from api.v1.views.user import RetrieveUpdateUserView, GenerateTokenView
 
 urlpatterns = [
     path('photos/', ListCreatePhotoView.as_view()),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('comments/', ListCreateCommentView.as_view()),
     path('comments/<int:id>/', UpdateDeleteCommentView.as_view()),
     path('profile/', RetrieveUpdateUserView.as_view()),
+    path('profile/generate_token', GenerateTokenView.as_view()),
 ]

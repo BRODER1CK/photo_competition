@@ -2,7 +2,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.urls import reverse
 from django_fsm import FSMField
-
 from models_app.models.comment import Comment
 
 
@@ -31,6 +30,8 @@ class Photo(models.Model):
                              related_query_name='photo',
                              verbose_name='Автор')
     comments = GenericRelation(Comment)
+    comment_count = models.PositiveIntegerField(default=0)
+    like_count = models.PositiveIntegerField(default=0)
 
     objects = models.Manager()
     published = PublishedManager()

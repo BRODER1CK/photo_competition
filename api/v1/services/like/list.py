@@ -13,7 +13,4 @@ class LikeListService(ServiceWithResult):
         return self
 
     def likes(self):
-        return Like.objects.filter(photo=self.photo())
-
-    def photo(self):
-        return Photo.objects.get(id=self.cleaned_data['photo_id'])
+        return Like.objects.filter(photo_id=self.cleaned_data['photo_id']).select_related('user')

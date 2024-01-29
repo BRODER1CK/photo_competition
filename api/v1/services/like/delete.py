@@ -16,12 +16,9 @@ class LikeDeleteService(ServiceWithResult):
         return self
 
     def unlike(self):
-        like = Like.objects.filter(user=self.user(), photo=self.photo())
+        like = Like.objects.filter(user=self.cleaned_data['current_user'], photo=self.photo())
         like.delete()
         return Like.objects.none()
-
-    def user(self):
-        return self.cleaned_data.get('current_user')
 
     def photo(self):
         return Photo.objects.get(id=self.cleaned_data['photo_id'])

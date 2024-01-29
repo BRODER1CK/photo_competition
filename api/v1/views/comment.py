@@ -1,13 +1,12 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from service_objects.services import ServiceOutcome
-
 from api.v1.docs.comment import LIST_COMMENT_DOC, CREATE_COMMENT_DOC, UPDATE_COMMENT_DOC, DELETE_COMMENT_DOC, \
     SHOW_COMMENT_DOC
+from api.v1.permissions.has_token_or_read_only import HasTokenOrReadOnly
 from api.v1.serializers.comment.list import ListCommentSerializer
 from api.v1.serializers.comment.show import ShowCommentSerializer
 from api.v1.services.comment.create import CommentCreateService
@@ -18,7 +17,7 @@ from api.v1.services.comment.update import CommentUpdateService
 
 
 class ListCreateCommentView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [HasTokenOrReadOnly]
     parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(**LIST_COMMENT_DOC)
@@ -33,7 +32,7 @@ class ListCreateCommentView(APIView):
 
 
 class UpdateDeleteCommentView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [HasTokenOrReadOnly]
     parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(**SHOW_COMMENT_DOC)
@@ -48,8 +47,7 @@ class UpdateDeleteCommentView(APIView):
 
     @swagger_auto_schema(**UPDATE_COMMENT_DOC)
     def patch(self, request, *args, **kwargs):
-        outcome = ServiceOutcome(CommentUpdateService, request.data.dict() | kwargs | {'current_user': request.user})
-        return Response(ListCommentSerializer(outcome.result).data, status=status.HTTP_200_OK)
+        return self.put(request, args, kwargs)
 
     @swagger_auto_schema(**DELETE_COMMENT_DOC)
     def delete(self, request, *args, **kwargs):

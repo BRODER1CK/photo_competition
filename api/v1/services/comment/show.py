@@ -1,9 +1,7 @@
 from django import forms
-from django.contrib.contenttypes.models import ContentType
 from service_objects.services import ServiceWithResult
 
 from models_app.models.comment import Comment
-from django.apps import apps
 
 
 class CommentShowService(ServiceWithResult):

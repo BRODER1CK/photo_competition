@@ -14,6 +14,7 @@ class PhotoUpdateService(ServiceWithResult):
     description = forms.CharField()
     current_photo = forms.ImageField()
     current_user = ModelField(User)
+    custom_validations = ['validate_user']
 
     def process(self):
         self.run_custom_validations()

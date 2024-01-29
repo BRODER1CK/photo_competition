@@ -1,15 +1,13 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from service_objects.services import ServiceOutcome
-
 from api.v1.docs.photo import CREATE_PHOTO_DOC, SHOW_PHOTO_DOC, LIST_PHOTO_DOC, UPDATE_PHOTO_DOC, DELETE_PHOTO_DOC, \
     PARTIAL_UPDATE_PHOTO_DOC
+from api.v1.permissions.has_token_or_read_only import HasTokenOrReadOnly
 from api.v1.serializers.photo.show import ShowPhotoSerializer
 from api.v1.services.photo.create import PhotoCreateService
 from api.v1.services.photo.delete import PhotoDeleteService
@@ -22,11 +20,7 @@ from utils.pagination import CustomPagination
 class ListCreatePhotoView(APIView):
     serializer_class = ShowPhotoSerializer
     parser_classes = [MultiPartParser]
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [SearchFilter, OrderingFilter]
-    search_fields = ['author', 'title', 'description']
-    ordering_fields = ['likes_count', 'publication_date', 'comments_count']
-
+    permission_classes = [HasTokenOrReadOnly]
 
     @swagger_auto_schema(**LIST_PHOTO_DOC)
     def get(self, request, *args, **kwargs):
@@ -58,7 +52,7 @@ class ListCreatePhotoView(APIView):
 class RetrieveUpdateDeletePhotoView(APIView):
     serializer_class = ShowPhotoSerializer
     parser_classes = [MultiPartParser]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [HasTokenOrReadOnly]
 
     @swagger_auto_schema(**SHOW_PHOTO_DOC)
     def get(self, request, *args, **kwargs):

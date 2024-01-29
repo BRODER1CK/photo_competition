@@ -12,7 +12,6 @@ class UserUpdateService(ServiceWithResult):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
 
-
     def process(self):
         self.run_custom_validations()
         if self.is_valid():
@@ -35,6 +34,7 @@ class UserUpdateService(ServiceWithResult):
         if not self.user():
             self.add_error('user', PermissionDenied(f'You must be logged in'))
             self.response_status = status.HTTP_404_NOT_FOUND
+
 
 class UserPartialUpdateService(UserUpdateService):
     first_name = forms.CharField(max_length=255, required=False)

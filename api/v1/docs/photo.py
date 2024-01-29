@@ -53,6 +53,26 @@ LIST_PHOTO_DOC = {
             description="Page size",
             type=openapi.TYPE_INTEGER,
         ),
+        openapi.Parameter(
+            name="ordering",
+            in_=openapi.IN_QUERY,
+            description="Ordering",
+            type=openapi.TYPE_STRING,
+            enum=['like_count', 'updated_at', 'comment_count'],
+        ),
+        openapi.Parameter(
+                    name="ordering_direction",
+                    in_=openapi.IN_QUERY,
+                    description="Ordering direction",
+                    type=openapi.TYPE_STRING,
+                    enum=['asc', 'desc'],
+                ),
+        openapi.Parameter(
+            name="search",
+            in_=openapi.IN_QUERY,
+            description="Search",
+            type=openapi.TYPE_STRING,
+        ),
     ],
     "responses": {200: openapi.Response("Success", ListPhotoSerializer(many=True))},
 }

@@ -7,7 +7,7 @@ from django.apps import apps
 
 
 class CommentListService(ServiceWithResult):
-    content_type = forms.ChoiceField(choices=(('Photo', 'Photo'), ('Comment', 'Comment')), required=False)
+    content_type = forms.ChoiceField(choices=(('Photo', 'Photo'), ('Comment', 'Comment')))
     object_id = forms.IntegerField(min_value=1)
 
     def process(self):
@@ -15,10 +15,9 @@ class CommentListService(ServiceWithResult):
         return self
 
     def comments(self):
-        if self.cleaned_data['content_type']:
-            return Comment.objects.filter(object_id=self.cleaned_data['object_id'],
-                                      content_type=ContentType.objects.get_for_model(
-                                          apps.get_model('models_app',
-                                                         self.cleaned_data['content_type'])))
-        else:
-            return Comment.objects.filter(object_id=self.cleaned_data['object_id'])
+        content_type_id = ContentType.objects.get_for_model(
+            apps.get_model('models_app', self.cleaned_data['content_type'])).id
+        return (Comment.objects.filter(object_id=self.cleaned_data['object_id'],
+                                       content_type_id=content_type_id)
+                .prefetch_related('comments')
+                .select_related('user', 'content_type'))

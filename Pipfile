@@ -17,6 +17,8 @@ django-service-objects = {git = "git+https://github.com/dvkurbatov/django-servic
 drf-yasg = "*"
 setuptools = "*"
 l = "*"
+rich = "*"
+django-log-request-id = "*"
 
 [dev-packages]
 

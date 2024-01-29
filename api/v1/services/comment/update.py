@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
 from service_objects.fields import ModelField
@@ -13,6 +12,7 @@ class CommentUpdateService(ServiceWithResult):
     text = forms.CharField(max_length=255)
     id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
+    custom_validations = ['validate_user']
 
     def process(self):
         self.run_custom_validations()
@@ -34,6 +34,6 @@ class CommentUpdateService(ServiceWithResult):
         return self.cleaned_data.get('current_user')
 
     def validate_user(self):
-        if not self.user() or self.photo().user != self.user():
+        if not self.user() or self.comment().user != self.user():
             self.add_error('user', PermissionDenied(f'You do not have permission'))
             self.response_status = status.HTTP_404_NOT_FOUND

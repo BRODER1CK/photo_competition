@@ -1,6 +1,5 @@
 from django import forms
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, BadRequest
 from rest_framework import status
 from service_objects.fields import ModelField
 from service_objects.services import ServiceWithResult
@@ -12,6 +11,7 @@ from models_app.models.user import User
 class CommentDeleteService(ServiceWithResult):
     id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
+    custom_validations = ['validate_user', 'validate_comments']
 
     def process(self):
         self.run_custom_validations()
@@ -32,4 +32,9 @@ class CommentDeleteService(ServiceWithResult):
     def validate_user(self):
         if not self.user() or self.comment().user != self.user():
             self.add_error('user', PermissionDenied(f'You do not have permission'))
-            self.response_status = status.HTTP_404_NOT_FOUND
+            self.response_status = status.HTTP_403_FORBIDDEN
+
+    def validate_comments(self):
+        if self.comment().comments.all():
+            self.add_error('user', BadRequest(f'You can not delete a comment, there are others underneath it'))
+            self.response_status = status.HTTP_400_BAD_REQUEST

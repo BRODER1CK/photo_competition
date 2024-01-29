@@ -1,22 +1,19 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from service_objects.services import ServiceOutcome
-
 from api.v1.docs.like import LIST_LIKE_DOC, DELETE_LIKE_DOC, CREATE_LIKE_DOC
-
+from api.v1.permissions.has_token_or_read_only import HasTokenOrReadOnly
 from api.v1.serializers.like.list import ListLikeSerializer
 from api.v1.services.like.create import LikeCreateService
-
 from api.v1.services.like.delete import LikeDeleteService
 from api.v1.services.like.list import LikeListService
 
 
 class ListLikeView(APIView):
     serializer_class = ListLikeSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [HasTokenOrReadOnly]
 
     @swagger_auto_schema(**LIST_LIKE_DOC)
     def get(self, request, *args, **kwargs):
@@ -25,7 +22,7 @@ class ListLikeView(APIView):
 
 
 class CreateDeleteLikeView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [HasTokenOrReadOnly]
 
     @swagger_auto_schema(**CREATE_LIKE_DOC)
     def post(self, request, *args, **kwargs):

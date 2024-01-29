@@ -11,6 +11,7 @@ from models_app.models.user import User
 class PhotoDeleteService(ServiceWithResult):
     id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
+    custom_validations = ['validate_user']
 
     def process(self):
         self.run_custom_validations()

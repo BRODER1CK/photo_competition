@@ -19,4 +19,7 @@ REST_FRAMEWORK = {
 SWAGGER_SETTINGS = {
     'LOGIN_URL': 'http://127.0.0.1:8000/social-auth/login/vk-oauth2/',
     'LOGOUT_URL': 'http://127.0.0.1:8000/logout/',
+    "SECURITY_DEFINITIONS": {
+        "Token": {"type": "apiKey", "name": "Authorization", "in": "header"}
+    },
 }

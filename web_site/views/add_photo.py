@@ -1,23 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
-from django.urls import reverse_lazy
-from django.views.generic import CreateView
-
-from utils.data_mixin import DataMixin
 from web_site.forms.add_photo_form import AddPhotoForm
 
-
-# class AddPhoto(LoginRequiredMixin, DataMixin, CreateView):
-#     form_class = AddPhotoForm
-#     template_name = 'web_site/add_photo.html'
-#     title_page = 'Добавление фотографии'
-#     success_url = reverse_lazy('home')
-#
-#     def form_valid(self, form):
-#         w = form.save(commit=False)
-#         w.user = self.request.user
-#         return super().form_valid(form)
 
 class AddPhoto(LoginRequiredMixin, View):
     def get(self, request):
@@ -33,7 +18,7 @@ class AddPhoto(LoginRequiredMixin, View):
             photo.user = self.request.user
             photo.save()
 
-            return redirect('profile')
+            return redirect('web_site:profile')
 
         return render(request, 'web_site/add_photo.html',
                       {'title': 'Добавление фотографии', 'form': form})
