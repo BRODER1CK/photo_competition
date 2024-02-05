@@ -1,4 +1,7 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import permissions
+
+from models_app.models.user import User
 
 
 class HasTokenOrReadOnly(permissions.BasePermission):
@@ -6,4 +9,8 @@ class HasTokenOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return bool(request.headers.get('Authorization') == request.user.token)
+        try:
+            request.user = User.objects.get(token=request.headers.get('Authorization'))
+            return True
+        except ObjectDoesNotExist:
+            return False

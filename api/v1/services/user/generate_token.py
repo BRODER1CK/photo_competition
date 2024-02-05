@@ -25,4 +25,4 @@ class GenerateTokenService(ServiceWithResult):
     def validate_user(self):
         if not self.cleaned_data.get('current_user'):
             self.add_error('user', PermissionDenied(f'You must be logged in'))
-            self.response_status = status.HTTP_404_NOT_FOUND
+            self.response_status = status.HTTP_401_UNAUTHORIZED

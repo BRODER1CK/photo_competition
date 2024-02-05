@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import secrets
 
 
 class User(AbstractUser):
@@ -11,7 +12,7 @@ class User(AbstractUser):
                                blank=True,
                                null=True,
                                verbose_name="Фотография")
-    token = models.CharField(max_length=255, verbose_name="Токен")
+    token = models.CharField(max_length=255, default=secrets.token_hex(16), verbose_name="Токен")
 
     class Meta:
         verbose_name = 'User'

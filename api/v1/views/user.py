@@ -50,7 +50,7 @@ class GenerateTokenView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     @swagger_auto_schema(**GENERATE_TOKEN_DOC)
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         user = None
         if request.user.is_authenticated:
             user = request.user
