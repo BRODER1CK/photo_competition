@@ -1,50 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<ul>
-	{% for p in photos %}
-			<li>
-    <h1>{{p.title}}</h1>
-    <p>Автор: {{ p.user.username }}</p>
-	<p>Дата: {{p.updated_at|date:"d-m-Y H:i:s"}}</p>
-    {% if p.current_photo %}
-    <p><img src="{{p.current_photo.url}}"></p>
-    {% endif %}
-    {% autoescape off %}
-	{{p.description|linebreaks|truncatewords:40}}
-    {% endautoescape %}
-			<p><a href="{{ p.get_absolute_url }}">Смотреть фотографию</a></p>
-			</li>
-	{% endfor %}
-</ul>
-{% endblock %}
+<div id="gallery" class="row">
+</div>
 
-{% block navigation %}
-{% if page_obj.has_other_pages %}
-<nav>
-    <ul>
-		{% if page_obj.has_previous %}
-        <li>
-                 <a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
-        </li>
-        {% endif %}
+<script>
+    async function photos() {
+        document.getElementById("gallery").innerHTML = ""
 
-        {% for p in paginator.page_range %}
-                   {% if page_obj.number == p %}
-        <li>{{ p }}</li>
-                   {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2  %}
-        <li>
-            <a href="?page={{ p }}">{{ p }}</a>
-        </li>
-                   {% endif %}
-        {% endfor %}
+        const gallery = document.getElementById('gallery');
 
-        {% if page_obj.has_next %}
-        <li>
-                 <a href="?page={{ page_obj.next_page_number }}">&gt;</a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
-{% endif %}
+        const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
+
+        for (var photo of photos.data.results) {
+              if (photo.status == 'P') {
+              const card = document.createElement('div');
+              card.classList.add('col-md-4', 'mb-3');
+
+              card.innerHTML = `
+                  <div class="card m-2">
+                      <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                      <div class="card-body">
+                          <h5 class="card-title">${photo.title}</h5>
+                          <p class="card-text">Автор: ${photo.author}</p>
+                          <p class="card-text">Дата публикации: ${photo.publication_date}</p>
+                          <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                          <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                          <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
+                      </div>
+                  </div>
+              `;
+
+              gallery.appendChild(card);
+              };
+              };
+        };
+</script>
+
+<script>
+    window.onload = photos()
+</script>
 {% endblock %}

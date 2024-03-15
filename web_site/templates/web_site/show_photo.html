@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<input type="hidden" id="user" value="{{ user }}">
+<div id="gallery" class="row">
+</div>
+
+<div id="comments-section" class="container">
+</div>
+
+<script>
+    async function photo() {
+        document.getElementById("gallery").innerHTML = ""
+
+        const gallery = document.getElementById('gallery');
+
+        const user = document.getElementById('user').value;
+
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+
+        const div = document.createElement('div');
+        div.classList.add('mb-3');
+
+        const card = document.createElement('div');
+        card.classList.add('card', 'm-2');
+
+        card.innerHTML = `
+            <img src="${photo.data.current_photo}" class="card-img-top" alt=${photo.data.title} data-toggle="tooltip" title=${photo.data.description}>
+        `;
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+
+        cardBody.innerHTML = `
+            <h5 class="card-title">${photo.data.title}</h5>
+            <p class="card-text">Автор: ${photo.data.author}</p>
+        `;
+
+
+        if (photo.data.status == 'P') {
+            cardBody.innerHTML += `
+                <p class="card-text">Дата публикации: ${photo.data.publication_date}</p>
+                `;
+            };
+
+        cardBody.innerHTML += `
+            <p id='likesContainer' class="card-text">Количество голосов: ${photo.data.like_count}</p>
+            <p id='commentsContainer' class="card-text">Количество комментариев: ${photo.data.comment_count}</p>
+        `;
+
+        if (photo.data.author == user) {
+            cardBody.innerHTML += `
+                <input type="hidden" id="object_id_${photo.data.id}" value="${photo.data.id}">
+                <input type="hidden" id="content_type_${photo.data.id}" value="Photo">
+                <form id="comment-form">
+                <input type="text" id="comment-input_${photo.data.id}" class="form-control" placeholder="Комментарий">
+                </form>
+                <button onclick="sendComment(${photo.data.id})" class="btn btn-primary">Отправить</button>
+                <br>
+                <br>
+                <a class="btn btn-secondary" href="/edit_photo/${photo.data.id}">Редактировать фотографию</a>
+                `;
+        } else if (typeof user != "undefined") {
+            cardBody.innerHTML += `
+                <input type="hidden" id="object_id_${photo.data.id}" value="${photo.data.id}">
+                <input type="hidden" id="content_type_${photo.data.id}" value="Photo">
+                <form id="comment-form">
+                <input type="text" id="comment-input_${photo.data.id}" class="form-control" placeholder="Комментарий">
+                </form>
+                <button onclick="sendComment(${photo.data.id})" class="btn btn-primary">Отправить</button>
+                <br>
+                <br>
+                <button id="likeButton" onclick="toggleLike()" class="btn btn-secondary">Оставить/снять голос</button>
+                `;
+                };
+
+        if (photo.data.author == user & photo.data.status != 'D') {
+            cardBody.innerHTML += `
+                <a class="btn btn-danger" onclick="deletePhoto(${photo.data.id})">Удалить фотографию</a>
+                `;
+        } else if (photo.data.author == user & photo.data.status == 'D') {
+            cardBody.innerHTML += `
+                <a class="btn btn-danger" onclick="deletePhoto(${photo.data.id})">Восстановить фотографию</a>
+                `;
+        };
+
+        card.appendChild(cardBody);
+
+        div.appendChild(card);
+
+        gallery.appendChild(div);
+
+        };
+</script>
+
+<script>
+    async function commentsSection() {
+
+    const container = document.getElementById('comments-section');
+
+    axios.get('http://127.0.0.1:8000/api/v1/comments/', {params: {'content_type': 'Photo', 'object_id': '{{ id }}'}})
+  .then(response => {
+    comments = response.data
+    displayComments(comments, container);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+    };
+</script>
+
+<script>
+function displayComments(comments, container) {
+  comments.forEach(function(comment) {
+    const commentElement = document.createElement('div');
+    const user = document.getElementById('user').value;
+    commentElement.className = 'card p-4';
+    commentElement.innerHTML = `
+                    <input type="hidden" id="object_id_${comment.id}" value="${comment.id}">
+                    <input type="hidden" id="content_type_${comment.id}" value="Comment">
+                    <h5 class="card-title">${comment.user}</h5>
+                    <p class="card-text">${comment.text}</p>`;
+
+    const buttonsElement = document.createElement('div');
+    buttonsElement.className = 'row';
+
+    buttonsElement.innerHTML += `<form id="comment-form">
+        <input type="text" id="comment-input_${comment.id}" class="form-control" placeholder="Комментарий">
+        </form>
+        <button onclick="sendComment(${comment.id})" class="btn btn-primary col">Отправить комментарий</button>`;
+
+    if (comment.user == user) {
+        buttonsElement.innerHTML += `<button onclick="editComment(${comment.id})" class="btn btn-secondary col">Редактировать комментарий</button>`;
+                    };
+
+    if (comment.comments.length > 0) {
+      var repliesContainer = document.createElement('div');
+      repliesContainer.className = 'ml-3';
+      buttonsElement.appendChild(repliesContainer);
+
+      displayComments(comment.comments, repliesContainer);
+    } else if (comment.user == user) { buttonsElement.innerHTML += `<button onclick="deleteComment(${comment.id})" class="btn btn-danger col">Удалить комментарий</button>`;
+                    };
+
+    commentElement.appendChild(buttonsElement);
+
+    container.appendChild(commentElement);
+
+    container.innerHTML += `<br>`
+  });
+}
+</script>
+
+<script>
+    async function sendComment(id) {
+
+        const csrftoken = getCookie('csrftoken');
+
+        const text = document.getElementById(`comment-input_${id}`).value;
+
+        const object_id = document.getElementById(`object_id_${id}`).value;
+
+        const content_type = document.getElementById(`content_type_${id}`).value;
+
+        const comment = await axios.post('http://127.0.0.1:8000/api/v1/comments/', {'text': text, 'object_id': object_id, 'content_type': content_type},
+        {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
+
+        const container = document.getElementById('comments-section');
+
+        commentsText = document.createTextNode(commentsSection());
+
+        container.innerHTML = '';
+
+        container.appendChild(commentsText);
+
+        const commentsDiv = document.getElementById("commentsContainer");
+
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+
+        commentsText = document.createTextNode(`Количество комментариев: ${photo.data.comment_count}`);
+
+        commentsDiv.innerHTML = '';
+
+        commentsDiv.appendChild(commentsText);
+    };
+</script>
+
+<script>
+    async function editComment(id) {
+
+        const csrftoken = getCookie('csrftoken');
+
+        const text = document.getElementById(`comment-input_${id}`).value;
+
+        const comment = await axios.put(`http://127.0.0.1:8000/api/v1/comments/${id}/`, {'text': text},
+
+        {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
+
+        const container = document.getElementById('comments-section');
+
+        commentsText = document.createTextNode(commentsSection());
+
+        container.innerHTML = '';
+
+        container.appendChild(commentsText);
+    };
+</script>
+
+<script>
+    async function deleteComment(id) {
+
+        const csrftoken = getCookie('csrftoken');
+
+        const comment = await axios.delete(`http://127.0.0.1:8000/api/v1/comments/${id}/`, {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
+
+        const container = document.getElementById('comments-section');
+
+        commentsText = document.createTextNode(commentsSection());
+
+        container.innerHTML = '';
+
+        container.appendChild(commentsText);
+
+        const commentsDiv = document.getElementById("commentsContainer");
+
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+
+        commentsText = document.createTextNode(`Количество комментариев: ${photo.data.comment_count}`);
+
+        commentsDiv.innerHTML = '';
+
+        commentsDiv.appendChild(commentsText);
+    };
+</script>
+
+<script>
+    async function like(id) {
+
+        const csrftoken = getCookie('csrftoken');
+
+<!--        const photo_id = document.getElementById(`object_id_${id}`).value;-->
+
+        const like = await axios.post('http://127.0.0.1:8000/api/v1/likes/{{ id }}/', {},
+        {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
+
+        const likesDiv = document.getElementById("likesContainer");
+
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+
+        likesText = document.createTextNode(`Количество голосов: ${photo.data.like_count}`);
+
+        likesDiv.innerHTML = '';
+
+        likesDiv.appendChild(likesText);
+    };
+</script>
+
+<script>
+    async function unlike(id) {
+
+        const csrftoken = getCookie('csrftoken');
+
+<!--        const photo_id = document.getElementById(`object_id_${id}`).value;-->
+
+        const like = await axios.delete('http://127.0.0.1:8000/api/v1/likes/{{ id }}/',
+        {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
+
+        const likesDiv = document.getElementById("likesContainer");
+
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+
+        likesText = document.createTextNode(`Количество голосов: ${photo.data.like_count}`);
+
+        likesDiv.innerHTML = '';
+
+        likesDiv.appendChild(likesText);
+    };
+</script>
+
+<script>
+async function toggleLike() {
+    const likesList = await axios.get('http://127.0.0.1:8000/api/v1/likes/', {params: {'photo_id': '{{ id }}'}});
+
+    let isLiked = false;
+
+    for (var user of likesList.data) {
+          if (user.user == '{{ user }}') {
+            isLiked = true;
+            };
+          };
+
+    if (isLiked) {
+        unlike();
+    } else {
+        like();
+    };
+};
+</script>
+
+<script>
+    window.onload = photo()
+</script>
+
+<script>
+    window.onload = commentsSection()
+</script>
+{% endblock %}

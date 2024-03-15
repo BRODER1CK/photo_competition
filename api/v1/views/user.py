@@ -46,7 +46,6 @@ class RetrieveUpdateUserView(APIView):
 
 class GenerateTokenView(APIView):
     serializer_class = GenerateTokenSerializer
-    parser_classes = [MultiPartParser]
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     @swagger_auto_schema(**GENERATE_TOKEN_DOC)

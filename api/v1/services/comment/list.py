@@ -17,7 +17,13 @@ class CommentListService(ServiceWithResult):
     def comments(self):
         content_type_id = ContentType.objects.get_for_model(
             apps.get_model('models_app', self.cleaned_data['content_type'])).id
-        return (Comment.objects.filter(object_id=self.cleaned_data['object_id'],
-                                       content_type_id=content_type_id)
-                .prefetch_related('comments')
-                .select_related('user', 'content_type'))
+        if self.cleaned_data['content_type'] == 'Photo':
+            return (Comment.objects.filter(object_id=self.cleaned_data['object_id'],
+                                           content_type_id=content_type_id)
+                    .prefetch_related('comments')
+                    .select_related('user', 'content_type'))
+        elif self.cleaned_data['content_type'] == 'Comment':
+            return (Comment.objects.filter(id=self.cleaned_data['object_id'],
+                                           content_type_id=content_type_id)
+                    .prefetch_related('comments')
+                    .select_related('user', 'content_type'))

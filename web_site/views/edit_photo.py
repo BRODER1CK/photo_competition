@@ -1,28 +1,11 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render
 from django.views import View
-from models_app.models.photo import Photo
-from web_site.forms.add_photo_form import AddPhotoForm
+
+from api.v1.views.photo import RetrieveUpdateDeletePhotoView
 
 
-class EditPhoto(LoginRequiredMixin, View):
-    def get(self, request, photo_id):
-        obj = get_object_or_404(Photo, id=photo_id, user=request.user)
-        form = AddPhotoForm(instance=obj)
-
-        return render(request, "web_site/add_photo.html",
-                      {'form': form, 'title': 'Изменение фотографии'})
-
-    def post(self, request, photo_id):
-        obj = get_object_or_404(Photo, id=photo_id, user=request.user)
-        form = AddPhotoForm(request.POST, instance=obj)
-        if form.is_valid():
-            obj.previous_photo = obj.current_photo
-            obj.current_photo = request.FILES['current_photo']
-            obj.title = request.POST['title']
-            obj.description = request.POST['description']
-            obj.save()
-            return redirect('profile')
-
-        return render(request, "web_site/add_photo.html",
-                      {'form': form, 'title': 'Изменение фотографии'})
+class EditPhoto(View):
+    def get(self, request, id):
+        photo = RetrieveUpdateDeletePhotoView().get(request, id=id).data
+        return render(request, 'web_site/edit_photo.html',
+                      {'title': 'Изменение фотографии', 'user': request.user, 'id': photo['id']})

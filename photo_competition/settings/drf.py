@@ -2,7 +2,7 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 9,
 
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -23,3 +23,5 @@ SWAGGER_SETTINGS = {
         "Token": {"type": "apiKey", "name": "Authorization", "in": "header"}
     },
 }
+
+CORS_ALLOW_ALL_ORIGINS = True

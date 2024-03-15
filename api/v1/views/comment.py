@@ -18,7 +18,6 @@ from api.v1.services.comment.update import CommentUpdateService
 
 class ListCreateCommentView(APIView):
     permission_classes = [HasTokenOrReadOnly]
-    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(**LIST_COMMENT_DOC)
     def get(self, request, *args, **kwargs):
@@ -27,13 +26,12 @@ class ListCreateCommentView(APIView):
 
     @swagger_auto_schema(**CREATE_COMMENT_DOC)
     def post(self, request, *args, **kwargs):
-        outcome = ServiceOutcome(CommentCreateService, request.POST.dict() | kwargs | {'current_user': request.user})
-        return Response(ListCommentSerializer(outcome.result).data, status=status.HTTP_200_OK)
+        outcome = ServiceOutcome(CommentCreateService, request.data | kwargs | {'current_user': request.user})
+        return Response(ListCommentSerializer(outcome.result).data, status=status.HTTP_201_CREATED)
 
 
 class UpdateDeleteCommentView(APIView):
     permission_classes = [HasTokenOrReadOnly]
-    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(**SHOW_COMMENT_DOC)
     def get(self, request, *args, **kwargs):
@@ -42,7 +40,7 @@ class UpdateDeleteCommentView(APIView):
 
     @swagger_auto_schema(**UPDATE_COMMENT_DOC)
     def put(self, request, *args, **kwargs):
-        outcome = ServiceOutcome(CommentUpdateService, request.data.dict() | kwargs | {'current_user': request.user})
+        outcome = ServiceOutcome(CommentUpdateService, request.data | kwargs | {'current_user': request.user})
         return Response(ListCommentSerializer(outcome.result).data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**UPDATE_COMMENT_DOC)

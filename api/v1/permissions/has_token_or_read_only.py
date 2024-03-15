@@ -7,6 +7,8 @@ from models_app.models.user import User
 class HasTokenOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
+            if request.headers.get('Authorization'):
+                request.user = User.objects.get(token=request.headers.get('Authorization'))
             return True
 
         try:

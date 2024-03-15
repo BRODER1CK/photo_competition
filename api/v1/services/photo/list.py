@@ -41,7 +41,7 @@ class PhotoListService(ServiceWithResult):
     def filtered_photos(self):
         photos = Photo.objects.all()
         ordering = 'updated_at'
-        ordering_direction = 'asc'
+        ordering_direction = 'desc'
         search = self.cleaned_data.get('search')
         if search:
             photos = photos.filter(Q(user__username__icontains=search) |
@@ -51,12 +51,10 @@ class PhotoListService(ServiceWithResult):
             ordering = self.cleaned_data['ordering']
         if self.cleaned_data.get('ordering_direction'):
             ordering_direction = self.cleaned_data['ordering_direction']
-            if ordering_direction == 'desc':
-                ordering = '-' + ordering
-
+        if ordering_direction == 'desc':
+            ordering = '-' + ordering
         if not self.user():
             photos = photos.filter(status='P')
         elif self.user() and not self.user().is_superuser:
             photos = photos.filter(Q(status='P') | Q(user=self.user()))
-
         return photos.order_by(ordering)

@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<input type="hidden" id="photoId" value="{{ id }}">
 <div class="container mt-5">
     <h1 class="mb-4">{{ title }}</h1>
        <form id="photoForm" enctype="multipart/form-data">
        {% csrf_token %}
            <div class="mb-3">
                <label for="title" class="form-label">Название</label>
-               <input type="text" class="form-control" name="title" id="title">
+               <input required="false" type="text" class="form-control" name="title" id="title">
            </div>
            <div class="mb-3">
                <label for="description" class="form-label">Описание</label>
@@ -15,21 +16,23 @@
            </div>
            <div class="mb-3">
                <label for="current_photo" class="form-label">Фотография</label>
-               <input type="file" class="form-control" accept="image/*" name="current_photo" id="current_photo">
+               <input required="false" type="file" class="form-control" accept="image/*" name="current_photo" id="current_photo">
            </div>
        </form>
-       <button id="editButton" class="btn btn-primary" onclick="sendPhoto()">Отправить</button>
+       <button id="editButton" class="btn btn-primary" onclick="editPhoto()">Отправить</button>
    </div>
 
 <script>
-    async function sendPhoto() {
+    async function editPhoto() {
         const csrftoken = getCookie('csrftoken');
+
+        const photoId = document.getElementById("photoId").value;
 
         const photoForm = document.getElementById("photoForm");
 
         const formData = new FormData(photoForm);
 
-        const photos = await axios.post(`http://127.0.0.1:8000/api/v1/photos/`, formData, {'headers': {
+        const photo = await axios.patch(`http://127.0.0.1:8000/api/v1/photos/${photoId}/`, formData, {'headers': {
         'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
 
         window.location.replace("{% url 'web_site:profile' %}");
@@ -37,7 +40,7 @@
 </script>
 
 <!--<script>-->
-<!--    var el = document.getElementById("sendButton");-->
-<!--    el.addEventListener("onclick", sendPhoto);-->
+<!--    var el = document.getElementById("editButton");-->
+<!--    el.addEventListener("onclick", editPhoto);-->
 <!--</script>-->
 {% endblock %}

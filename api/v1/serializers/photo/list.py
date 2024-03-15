@@ -15,4 +15,4 @@ class ListPhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
-        fields = ['current_photo', 'like_count', 'comment_count', 'author', 'title', 'publication_date', 'description']
+        fields = ['id', 'status', 'current_photo', 'like_count', 'comment_count', 'author', 'title', 'publication_date', 'description']

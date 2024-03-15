@@ -46,7 +46,7 @@ class ListCreatePhotoView(APIView):
         outcome = ServiceOutcome(PhotoCreateService,
                                  request.POST.dict() | {'current_user': request.user},
                                  request.FILES)
-        return Response(ShowPhotoSerializer(outcome.result).data, status=status.HTTP_200_OK)
+        return Response(ShowPhotoSerializer(outcome.result).data, status=status.HTTP_201_CREATED)
 
 
 class RetrieveUpdateDeletePhotoView(APIView):
@@ -67,7 +67,8 @@ class RetrieveUpdateDeletePhotoView(APIView):
         user = None
         if request.user.is_authenticated:
             user = request.user
-        outcome = ServiceOutcome(PhotoUpdateService, request.data.dict() | kwargs | {'current_user': user})
+        outcome = ServiceOutcome(PhotoUpdateService, request.data.dict() | kwargs | {'current_user': user},
+                                 request.FILES)
         return Response(ShowPhotoSerializer(outcome.result).data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**PARTIAL_UPDATE_PHOTO_DOC)
@@ -75,7 +76,8 @@ class RetrieveUpdateDeletePhotoView(APIView):
         user = None
         if request.user.is_authenticated:
             user = request.user
-        outcome = ServiceOutcome(PhotoPartialUpdateService, request.data.dict() | kwargs | {'current_user': user})
+        outcome = ServiceOutcome(PhotoPartialUpdateService, request.data.dict() | kwargs | {'current_user': user},
+                                 request.FILES)
         return Response(ShowPhotoSerializer(outcome.result).data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**DELETE_PHOTO_DOC)

@@ -14,5 +14,5 @@ urlpatterns = [
     path('comments/', ListCreateCommentView.as_view()),
     path('comments/<int:id>/', UpdateDeleteCommentView.as_view()),
     path('profile/', RetrieveUpdateUserView.as_view()),
-    path('profile/generate_token', GenerateTokenView.as_view()),
+    path('profile/generate_token/', GenerateTokenView.as_view()),
 ]

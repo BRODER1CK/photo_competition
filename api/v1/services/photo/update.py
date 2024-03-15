@@ -31,6 +31,7 @@ class PhotoUpdateService(ServiceWithResult):
         if self.cleaned_data.get('current_photo'):
             photo.previous_photo = photo.current_photo
             photo.current_photo = self.cleaned_data['current_photo']
+        photo.status = 'M'
         photo.save()
         return photo
 

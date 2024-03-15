@@ -16,12 +16,21 @@ class PhotoDeleteService(ServiceWithResult):
     def process(self):
         self.run_custom_validations()
         if self.is_valid():
-            self.result = self.delete_photo()
+            if self.photo().status == 'D':
+                self.result = self.restore_photo()
+            else:
+                self.result = self.delete_photo()
         return self
 
     def delete_photo(self):
         photo = self.photo()
         photo.status = 'D'
+        photo.save()
+        return photo
+
+    def restore_photo(self):
+        photo = self.photo()
+        photo.status = 'M'
         photo.save()
         return photo
 

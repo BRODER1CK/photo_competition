@@ -1,53 +1,141 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Личный кабинет</h1>
+<input type="hidden" id="user" value="{{ profile }}">
+<title>{{ title }}</title>
+<style>
+  .profile-card {
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+  .profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
 
-    {% if user.avatar %}
-    <p ><img src="{{ user.avatar }}">
+  .profile-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .profile-email {
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    margin-right: 10px;
+  }
+}
+</style>
+<div class="profile-card">
+    {% if profile.avatar %}
+    <img src="{{ profile.avatar }}" alt="Profile Picture" class="profile-picture">
     {% else %}
-    <p ><img src="{{ default_image }}">
+    <img src="{{ default_image }}" alt="Profile Picture" class="profile-picture">
     {% endif %}
-    <div>{{ form.non_field_errors }}</div>
-    {% for f in form %}
-    <p><label form="{{ f.id_for_label }}">{{ f.label }}: </label>{{ f }}</p>
-    <div>{{ f.errors }}</div>
-    {% endfor %}
-    <p ><button type="submit">Сохранить</button></p>
-</form>
-    <p><a href="{{ 'add_photo' }}">Добавить фотографию</a></p>
-    <ul>
-        {% for p in photos %}
-        {% if user.id == p.user_id %}
-                <li>
-        <h1>{{p.title}}</h1>
-        {% if p.status == 'P' %}
-        <p>Опубликовано</p>
-        {% elif p.status == 'M' %}
-        <p>Ожидает модерацию</p>
-        {% elif p.status == 'D' %}
-        <p>На удалении</p>
-        {% endif %}
-        <p>Дата: {{p.updated_at|date:"d-m-Y H:i:s"}}</p>
-        {% if p.current_photo %}
-        <p><img src="{{p.current_photo.url}}"></p>
-        {% endif %}
-        {% autoescape off %}
-        {{p.description|linebreaks|truncatewords:40}}
-        {% endautoescape %}
-                <p><a href="{{ p.get_absolute_url }}">Смотреть фотографию</a></p>
-                <p><a href="{{ 'edit_photo' }}/{{ p.id }}/">Изменить фотографию</a></p>
-                {% if p.status == 'P' or p.status == 'M' %}
-                <p><a href="{{ 'delete_photo' }}/{{ p.id }}/">Удалить фотографию</a></p>
-                {% elif p.status == 'D' %}
-                <p><a href="{{ 'restore_photo' }}/{{ p.id }}/">Восстановить фотографию</a></p>
-                {% endif %}
-                </li>
-        {% endif %}
-        {% endfor %}
-    </ul>
+    <div class="profile-name">{{ profile.first_name }} {{ profile.last_name }}</div>
+    <div class="profile-email">{{ profile.email }}</div>
+    <div id='tokenContainer' class="text">{{ profile.token }}</div>
+    <a class="btn btn-secondary" onclick="generate_token()">Генерировать токен</a>
+  </div>
+</div>
+<div id="gallery" class="row">
+</div>
+<div class="d-flex justify-content-center m-2">
+  <a href="{% url 'web_site:add_photo' %}" class="btn btn-primary">Добавить фотографию</a>
+</div>
 
+<script>
+    async function profilePhotos() {
+        document.getElementById("gallery").innerHTML = ""
+
+        const gallery = document.getElementById('gallery');
+
+        const user = document.getElementById('user').value;
+
+        const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
+
+        for (var photo of photos.data.results) {
+              if (photo.author == user) {
+              const div = document.createElement('div');
+        div.classList.add('col-md-4', 'mb-3');
+
+        const card = document.createElement('div');
+        card.classList.add('card', 'm-2');
+
+        card.innerHTML = `
+            <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+        `;
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+
+        cardBody.innerHTML = `
+            <input type="hidden" id="object_id" value="{{ photo.id }}">
+            <h5 class="card-title">${photo.title}</h5>
+            <p class="card-text">Автор: ${photo.author}</p>
+        `;
+
+
+        if (photo.status == 'P') {
+            cardBody.innerHTML += `
+                <p class="card-text">Дата публикации: ${photo.publication_date}</p>
+                `;
+            };
+
+        cardBody.innerHTML += `
+            <p class="card-text">Количество голосов: ${photo.like_count}</p>
+            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
+            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+        `;
+
+        if (photo.status != 'D') {
+            cardBody.innerHTML += `
+                <a class="btn btn-danger" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
+                `;
+        } else if (photo.status == 'D') {
+            cardBody.innerHTML += `
+                <a class="btn btn-danger" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
+                `;
+        };
+
+        card.appendChild(cardBody);
+
+        div.appendChild(card);
+
+        gallery.appendChild(div);
+              };
+              };
+        };
+</script>
+
+<script>
+    async function generate_token() {
+
+        const csrftoken = getCookie('csrftoken');
+
+        const tokenDiv = document.getElementById("tokenContainer");
+
+        const token = await axios.post('http://127.0.0.1:8000/api/v1/profile/generate_token/', {},
+        {'headers': {'Authorization': '{{ user.token }}', 'accept': 'application/json; charset=UTF-8', 'X-CSRFToken': csrftoken}});
+
+        tokenText = document.createTextNode(token.data.token);
+
+        tokenDiv.innerHTML = '';
+
+        tokenDiv.appendChild(tokenText);
+    };
+</script>
+
+<script>
+    window.onload = profilePhotos()
+</script>
 {% endblock %}

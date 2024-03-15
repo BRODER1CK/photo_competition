@@ -47,12 +47,14 @@ INSTALLED_APPS = [
     'service_objects',
     'django_fsm',
     'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'log_request_id.middleware.RequestIDMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

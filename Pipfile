@@ -19,6 +19,7 @@ setuptools = "*"
 l = "*"
 rich = "*"
 django-log-request-id = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
