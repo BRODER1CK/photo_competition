@@ -68,10 +68,10 @@
                   Сортировка
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" onclick="orderByLikes()">По количеству голосов</a></li>
-                  <li><a class="dropdown-item" onclick="orderByComments()">По количеству комментариев</a></li>
+                  <li><a class="dropdown-item" onclick="orderBy('like_count')">По количеству голосов</a></li>
+                  <li><a class="dropdown-item" onclick="orderBy('comment_count')">По количеству комментариев</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" onclick="orderByTime()">По дате добавления</a></li>
+                  <li><a class="dropdown-item" onclick="orderBy('updated_at')">По дате добавления</a></li>
                 </ul>
               </li>
 <!--              <li class="nav-item">-->
@@ -88,10 +88,10 @@
                   Фильтрация
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" onclick="filterM()">На модерации</a></li>
-                  <li><a class="dropdown-item" onclick="filterD()">На удалении</a></li>
+                  <li><a class="dropdown-item" onclick="filter('M')">На модерации</a></li>
+                  <li><a class="dropdown-item" onclick="filter('D')">На удалении</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" onclick="filterP()">Одобренные</a></li>
+                  <li><a class="dropdown-item" onclick="filter('P')">Одобренные</a></li>
                 </ul>
               </li>
             {% endif %}
@@ -153,189 +153,90 @@ async function searchPhoto() {
 </script>
 
 <script>
-async function filterM() {
-  document.getElementById("gallery").innerHTML = ""
+async function filter(status) {
+    document.getElementById("gallery").innerHTML = ""
 
-  const gallery = document.getElementById('gallery');
+    const gallery = document.getElementById('gallery');
 
-  const author = document.getElementById("author").value;
+    const author = document.getElementById("user").value;
 
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
+    const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
 
-  for (var photo of photos.data.results) {
-        if (photo.status == 'M' & photo.author == author) {
-            const card = document.createElement('div');
-            card.classList.add('col-md-4', 'mb-3');
-
-            card.innerHTML = `
-                <div class="card m-2">
-                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                    <div class="card-body">
-                        <h5 class="card-title">${photo.title}</h5>
-                        <p class="card-text">Автор: ${photo.author}</p>
-                        <p class="card-text">Статус: ${photo.status}</p>
-                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                        <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                        <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                        <a class="btn btn-danger" href="/delete_photo/${photo.id}">Удалить фотографию</a>
+    for (var photo of photos.data.results) {
+        if (photo.author == author) {
+            if (photo.status == status & status == 'M') {
+                const card = document.createElement('div');
+                card.classList.add('col-md-4', 'mb-3');
+                card.innerHTML = `
+                    <div class="card m-2">
+                        <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                        <div class="card-body">
+                            <h5 class="card-title">${photo.title}</h5>
+                            <p class="card-text">Автор: ${photo.author}</p>
+                            <p class="card-text">На модерации</p>
+                            <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
+                            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+                            <a class="btn btn-danger" href="/delete_photo/${photo.id}">Удалить фотографию</a>
+                        </div>
                     </div>
-                </div>
-            `;
+                    `;
 
-            gallery.appendChild(card);
+                gallery.appendChild(card);
+            } else if (photo.status == status & status == 'D') {
+                const card = document.createElement('div');
+                card.classList.add('col-md-4', 'mb-3');
+                card.innerHTML = `
+                    <div class="card m-2">
+                        <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                        <div class="card-body">
+                            <h5 class="card-title">${photo.title}</h5>
+                            <p class="card-text">Автор: ${photo.author}</p>
+                            <p class="card-text">На удалении</p>
+                            <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
+                            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+                            <a class="btn btn-danger" href="/delete_photo/${photo.id}">Восстановить фотографию</a>
+                        </div>
+                    </div>
+                    `;
+
+                gallery.appendChild(card);
+            } else if (photo.status == status & status == 'P') {
+                const card = document.createElement('div');
+                card.classList.add('col-md-4', 'mb-3');
+                card.innerHTML = `
+                    <div class="card m-2">
+                        <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                        <div class="card-body">
+                            <h5 class="card-title">${photo.title}</h5>
+                            <p class="card-text">Автор: ${photo.author}</p>
+                            <p class="card-text">Дата публикации: ${photo.publication_date}</p>
+                            <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
+                            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+                            <a class="btn btn-danger" href="/delete_photo/${photo.id}">Удалить фотографию</a>
+                        </div>
+                    </div>
+                `;
+
+                gallery.appendChild(card);
             };
         };
-  };
+    };
+};
 </script>
 
 <script>
-async function filterD() {
+async function orderBy(parameter) {
   document.getElementById("gallery").innerHTML = ""
 
   const gallery = document.getElementById('gallery');
 
-  const author = document.getElementById("author").value;
-
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
-
-  for (var photo of photos.data.results) {
-        if (photo.status == 'D' & photo.author == author) {
-            const card = document.createElement('div');
-            card.classList.add('col-md-4', 'mb-3');
-
-            card.innerHTML = `
-                <div class="card m-2">
-                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                    <div class="card-body">
-                        <h5 class="card-title">${photo.title}</h5>
-                        <p class="card-text">Автор: ${photo.author}</p>
-                        <p class="card-text">Статус: ${photo.status}</p>
-                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                        <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                        <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                        <a class="btn btn-danger" href="/delete_photo/${photo.id}">Восстановить фотографию</a>
-                    </div>
-                </div>
-            `;
-
-            gallery.appendChild(card);
-            };
-        };
-  };
-</script>
-
-<script>
-async function filterP() {
-  document.getElementById("gallery").innerHTML = ""
-
-  const gallery = document.getElementById('gallery');
-
-  const author = document.getElementById("author").value;
-
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
-
-  for (var photo of photos.data.results) {
-        if (photo.status == 'P' & photo.author == author) {
-            const card = document.createElement('div');
-            card.classList.add('col-md-4', 'mb-3');
-
-            card.innerHTML = `
-                <div class="card m-2">
-                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                    <div class="card-body">
-                        <h5 class="card-title">${photo.title}</h5>
-                        <p class="card-text">Автор: ${photo.author}</p>
-                        <p class="card-text">Дата публикации: ${photo.publication_date}</p>
-                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                        <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                        <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                        <a class="btn btn-danger" href="/delete_photo/${photo.id}">Удалить фотографию</a>
-                    </div>
-                </div>
-            `;
-
-            gallery.appendChild(card);
-            };
-        };
-  };
-</script>
-
-<script>
-async function orderByLikes() {
-  document.getElementById("gallery").innerHTML = ""
-
-  const gallery = document.getElementById('gallery');
-
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'ordering': 'like_count', 'ordering_direction': 'desc'}});
-
-  for (var photo of photos.data.results) {
-        if (photo.status == 'P') {
-        const card = document.createElement('div');
-        card.classList.add('col-md-4', 'mb-3');
-
-        card.innerHTML = `
-            <div class="card m-2">
-                <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                <div class="card-body">
-                    <h5 class="card-title">${photo.title}</h5>
-                    <p class="card-text">Автор: ${photo.author}</p>
-                    <p class="card-text">Дата публикации: ${photo.publication_date}</p>
-                    <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                    <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                    <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                </div>
-            </div>
-        `;
-
-        gallery.appendChild(card);
-        };
-        };
-  };
-</script>
-
-<script>
-async function orderByComments() {
-  document.getElementById("gallery").innerHTML = ""
-
-  const gallery = document.getElementById('gallery');
-
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'ordering': 'comment_count', 'ordering_direction': 'desc'}});
-
-  for (var photo of photos.data.results) {
-        if (photo.status == 'P') {
-        const card = document.createElement('div');
-        card.classList.add('col-md-4', 'mb-3');
-
-        card.innerHTML = `
-            <div class="card m-2">
-                <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                <div class="card-body">
-                    <h5 class="card-title">${photo.title}</h5>
-                    <p class="card-text">Автор: ${photo.author}</p>
-                    <p class="card-text">Дата публикации: ${photo.publication_date}</p>
-                    <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                    <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                    <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                </div>
-            </div>
-        `;
-
-        gallery.appendChild(card);
-        };
-        };
-  };
-</script>
-
-<script>
-async function orderByTime() {
-  document.getElementById("gallery").innerHTML = ""
-
-  const gallery = document.getElementById('gallery');
-
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'ordering': 'updated_at', 'ordering_direction': 'desc'}});
+  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'ordering': parameter, 'ordering_direction': 'desc'}});
 
   for (var photo of photos.data.results) {
         if (photo.status == 'P') {

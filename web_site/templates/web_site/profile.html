@@ -88,6 +88,14 @@
             cardBody.innerHTML += `
                 <p class="card-text">Дата публикации: ${photo.publication_date}</p>
                 `;
+            } else if (photo.status == 'M') {
+            cardBody.innerHTML += `
+                <p class="card-text">На модерации</p>
+                `;
+            } else if (photo.status == 'D') {
+            cardBody.innerHTML += `
+                <p class="card-text">На удалении</p>
+                `;
             };
 
         cardBody.innerHTML += `
