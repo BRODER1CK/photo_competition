@@ -153,6 +153,7 @@ function displayComments(comments, container) {
     if (comment.comments.length > 0) {
       var repliesContainer = document.createElement('div');
       repliesContainer.className = 'ml-3';
+      repliesContainer.innerHTML += `<br>`
       buttonsElement.appendChild(repliesContainer);
 
       displayComments(comment.comments, repliesContainer);
