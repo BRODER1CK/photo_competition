@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<input type="hidden" id="photoId" value="{{ id }}">
+<input type="hidden" id="photoId" value="{{ photo.id }}">
 <div class="container mt-5">
     <h1 class="mb-4">{{ title }}</h1>
        <form id="photoForm" enctype="multipart/form-data">
        {% csrf_token %}
            <div class="mb-3">
                <label for="title" class="form-label">Название</label>
-               <input required="false" type="text" class="form-control" name="title" id="title">
+               <input required="false" type="text" class="form-control" name="title" id="title" placeholder="{{ photo.title }}">
            </div>
            <div class="mb-3">
                <label for="description" class="form-label">Описание</label>
-               <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+               <textarea class="form-control" id="description" name="description" rows="3" placeholder="{{ photo.description }}"></textarea>
            </div>
            <div class="mb-3">
                <label for="current_photo" class="form-label">Фотография</label>

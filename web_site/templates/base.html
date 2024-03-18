@@ -26,69 +26,88 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-{% if user.is_authenticated and request.path  == '/profile/' %}
-	<li class="nav-item">
- <a class="nav-link active" aria-current="page" href="{% url 'web_site:home' %}">Главная страница</a>
-	</li>
-	<li class="nav-item">
- <a class="nav-link" href="{% url 'web_site:logout' %}" tabindex="-1">Выйти</a>
- </li>
-{% elif user.is_authenticated and request.path  == '/' %}
-	<li class="nav-item">
-	<a class="nav-link" href="{% url 'web_site:profile' %}">Личный кабинет</a>
-	</li>
-	<li class="nav-item">
- <a class="nav-link" href="{% url 'web_site:logout' %}" tabindex="-1">Выйти</a>
-	</li>
-{% elif user.is_authenticated %}
-	<li class="nav-item">
-	<a class="nav-link active" aria-current="page" href="{% url 'web_site:home' %}">Главная страница</a>
-	</li>
-	<li class="nav-item">
-	<a class="nav-link" href="{% url 'web_site:profile' %}">Личный кабинет</a>
-	</li>
-	<li class="nav-item">
- <a class="nav-link" href="{% url 'web_site:logout' %}" tabindex="-1">Выйти</a>
-	</li>
-{% elif request.path  == '/' %}
-	<li class="nav-item">
-	 <a class="nav-link" href="{% url 'social:begin' 'vk-oauth2' %}" tabindex="-1">Войти</a>
-	</li>
-{% else %}
-	<li class="nav-item">
-	<a class="nav-link active" aria-current="page" href="{% url 'web_site:home' %}">Главная страница</a>
-	</li>
-	<li class="nav-item">
-	 <a class="nav-link" href="{% url 'social:begin' 'vk-oauth2' %}" tabindex="-1">Войти</a>
-	</li>
-{% endif %}
-              {% if request.path  == '/' %}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Сортировка
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" onclick="orderBy('like_count')">По количеству голосов</a></li>
-                  <li><a class="dropdown-item" onclick="orderBy('comment_count')">По количеству комментариев</a></li>
-                  <li><a class="dropdown-item" onclick="orderBy('updated_at')">По дате добавления</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" onclick="orderBy()">Без сортировки</a></li>
-                </ul>
-              </li>
-<!--              <li class="nav-item">-->
-<!--                <a class="nav-link disabled" aria-disabled="true">Disabled</a>-->
-<!--              </li>-->
+            {% if user.is_authenticated and request.path  == '/profile/' %}
+            	<li class="nav-item">
+             <a class="nav-link active" aria-current="page" href="{% url 'web_site:home' %}">Главная страница</a>
+            	</li>
+            	<li class="nav-item">
+             <a class="nav-link" href="{% url 'web_site:logout' %}" tabindex="-1">Выйти</a>
+             </li>
+            {% elif user.is_authenticated and request.path  == '/' %}
+            	<li class="nav-item">
+            	<a class="nav-link" href="{% url 'web_site:profile' %}">Личный кабинет</a>
+            	</li>
+            	<li class="nav-item">
+             <a class="nav-link" href="{% url 'web_site:logout' %}" tabindex="-1">Выйти</a>
+            	</li>
+            {% elif user.is_authenticated %}
+            	<li class="nav-item">
+            	<a class="nav-link active" aria-current="page" href="{% url 'web_site:home' %}">Главная страница</a>
+            	</li>
+            	<li class="nav-item">
+            	<a class="nav-link" href="{% url 'web_site:profile' %}">Личный кабинет</a>
+            	</li>
+            	<li class="nav-item">
+             <a class="nav-link" href="{% url 'web_site:logout' %}" tabindex="-1">Выйти</a>
+            	</li>
+            {% elif request.path  == '/' %}
+            	<li class="nav-item">
+            	 <a class="nav-link" href="{% url 'social:begin' 'vk-oauth2' %}" tabindex="-1">Войти</a>
+            	</li>
+            {% else %}
+            	<li class="nav-item">
+            	<a class="nav-link active" aria-current="page" href="{% url 'web_site:home' %}">Главная страница</a>
+            	</li>
+            	<li class="nav-item">
+            	 <a class="nav-link" href="{% url 'social:begin' 'vk-oauth2' %}" tabindex="-1">Войти</a>
+            	</li>
+            {% endif %}
             </ul>
+            {% if request.path  == '/' %}
+            <li class="nav-item dropdown" style="list-style-type:none;">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Сортировка
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <div id="formCheck">
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="like_count">
+                  <label class="form-check-label" for="flexRadioDefault1">По количеству голосов</label>
+                  </div>
+                  </li>
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="comment_count">
+                  <label class="form-check-label" for="flexRadioDefault2">По количеству комментариев</label>
+                  </div>
+                  </li>
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="updated_at">
+                  <label class="form-check-label" for="flexRadioDefault3">По дате добавления</label>
+                  </div>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" value="" checked>
+                  <label class="form-check-label" for="flexRadioDefault4">Без сортировки</label>
+                  </div>
+                  </li>
+                </div>
+              </ul>
+            </li>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" id="search" placeholder="Поиск" aria-label="Search">
               <a href="#" class="btn btn-outline-success" onclick="searchPhoto()">Найти</a>
             </form>
             {% elif request.path  == '/profile/' %}
-              <li class="nav-item dropdown">
+              <li class="nav-item dropdown" style="list-style-type:none;">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Фильтрация
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-end">
                   <li><a class="dropdown-item" onclick="filter('M')">На модерации</a></li>
                   <li><a class="dropdown-item" onclick="filter('D')">На удалении</a></li>
                   <li><a class="dropdown-item" onclick="filter('P')">Одобренные</a></li>
@@ -103,18 +122,28 @@
     {% endblock %}
     {% block content %}
     {% endblock %}
+    {% block pagination %}
+    {% endblock %}
   </body>
 </html>
 
 <script>
 async function searchPhoto() {
-  document.getElementById("gallery").innerHTML = ""
 
   const gallery = document.getElementById('gallery');
 
   const search = document.getElementById("search").value;
 
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'search': search}});
+  if (search.length < 3 & search.length != 0) {
+    alert("Слишком короткий поисковый запрос! Минимум 3 символа");
+    return;
+    };
+
+  gallery.innerHTML = ""
+
+  const ordering = document.querySelector('input[name="flexRadioDefault"]:checked').value;
+
+  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'search': search, 'ordering': ordering, 'ordering_direction': 'desc'}});
 
   for (var photo of photos.data.results) {
         if (photo.status == 'P') {
@@ -123,14 +152,15 @@ async function searchPhoto() {
 
         card.innerHTML = `
             <div class="card m-2">
+                <a href="/photo/${photo.id}">
                 <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                </a>
                 <div class="card-body">
                     <h5 class="card-title">${photo.title}</h5>
                     <p class="card-text">Автор: ${photo.author}</p>
                     <p class="card-text">Дата публикации: ${photo.publication_date}</p>
                     <p class="card-text">Количество голосов: ${photo.like_count}</p>
                     <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                    <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
                 </div>
             </div>
         `;
@@ -146,7 +176,10 @@ async function searchPhoto() {
 
     const csrftoken = getCookie('csrftoken');
 
-    const photo = await axios.delete(`http://127.0.0.1:8000/api/v1/photos/${id}/`, {'headers': { 'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
+    const profile = await axios.get('http://127.0.0.1:8000/api/v1/profile/');
+
+    const photo = await axios.delete(`http://127.0.0.1:8000/api/v1/photos/${id}/`,
+    {'headers': { 'Authorization': profile.data.token, 'X-CSRFToken': csrftoken}});
 
     const buttonDiv = document.getElementById(`deletePhoto_${id}`);
 
@@ -184,16 +217,15 @@ async function filter(status) {
                 card.classList.add('col-md-4', 'mb-3');
                 card.innerHTML = `
                     <div class="card m-2">
+                        <a href="/photo/${photo.id}">
                         <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                        </a>
                         <div class="card-body">
                             <h5 class="card-title">${photo.title}</h5>
                             <p class="card-text">Автор: ${photo.author}</p>
                             <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
                             <p class="card-text">Количество голосов: ${photo.like_count}</p>
                             <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                            <br>
-                            <br>
                             <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
                             <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
                         </div>
@@ -206,16 +238,15 @@ async function filter(status) {
                 card.classList.add('col-md-4', 'mb-3');
                 card.innerHTML = `
                     <div class="card m-2">
+                        <a href="/photo/${photo.id}">
                         <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                        </a>
                         <div class="card-body">
                             <h5 class="card-title">${photo.title}</h5>
                             <p class="card-text">Автор: ${photo.author}</p>
                             <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
                             <p class="card-text">Количество голосов: ${photo.like_count}</p>
                             <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                            <br>
-                            <br>
                             <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
                             <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
                         </div>
@@ -228,16 +259,15 @@ async function filter(status) {
                 card.classList.add('col-md-4', 'mb-3');
                 card.innerHTML = `
                     <div class="card m-2">
+                        <a href="/photo/${photo.id}">
                         <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                        </a>
                         <div class="card-body">
                             <h5 class="card-title">${photo.title}</h5>
                             <p class="card-text">Автор: ${photo.author}</p>
                             <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
                             <p class="card-text">Количество голосов: ${photo.like_count}</p>
                             <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-                            <br>
-                            <br>
                             <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
                             <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
                         </div>
@@ -257,7 +287,9 @@ async function orderBy(parameter) {
 
   const gallery = document.getElementById('gallery');
 
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'ordering': parameter, 'ordering_direction': 'desc'}});
+  const search = document.getElementById("search").value;
+
+  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'search': search, 'ordering': parameter, 'ordering_direction': 'desc'}});
 
   for (var photo of photos.data.results) {
         if (photo.status == 'P') {
@@ -266,14 +298,15 @@ async function orderBy(parameter) {
 
         card.innerHTML = `
             <div class="card m-2">
+                <a href="/photo/${photo.id}">
                 <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                </a>
                 <div class="card-body">
                     <h5 class="card-title">${photo.title}</h5>
                     <p class="card-text">Автор: ${photo.author}</p>
                     <p class="card-text">Дата публикации: ${photo.publication_date}</p>
                     <p class="card-text">Количество голосов: ${photo.like_count}</p>
                     <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                    <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
                 </div>
             </div>
         `;
@@ -300,4 +333,8 @@ async function orderBy(parameter) {
     }
     return cookieValue;
 }
+</script>
+
+<script>
+
 </script>

@@ -71,7 +71,9 @@
         card.classList.add('card', 'm-2');
 
         card.innerHTML = `
+            <a href="/photo/${photo.id}">
             <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+            </a>
         `;
 
         const cardBody = document.createElement('div');
@@ -101,9 +103,6 @@
         cardBody.innerHTML += `
             <p class="card-text">Количество голосов: ${photo.like_count}</p>
             <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-            <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
-            <br>
-            <br>
             <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
         `;
 
@@ -134,14 +133,12 @@
 
         const tokenDiv = document.getElementById("tokenContainer");
 
-        const token = await axios.post('http://127.0.0.1:8000/api/v1/profile/generate_token/', {},
-        {'headers': {'Authorization': '{{ user.token }}', 'accept': 'application/json; charset=UTF-8', 'X-CSRFToken': csrftoken}});
+        const profile = await axios.get('http://127.0.0.1:8000/api/v1/profile/');
 
-        tokenText = document.createTextNode(token.data.token);
+        const newToken = await axios.post('http://127.0.0.1:8000/api/v1/profile/generate_token/', {},
+        {'headers': {'Authorization': profile.data.token, 'accept': 'application/json; charset=UTF-8', 'X-CSRFToken': csrftoken}});
 
-        tokenDiv.innerHTML = '';
-
-        tokenDiv.appendChild(tokenText);
+        tokenDiv.innerHTML = newToken.data.token;
     };
 </script>
 

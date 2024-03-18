@@ -157,14 +157,15 @@ function displayComments(comments, container) {
       buttonsElement.appendChild(repliesContainer);
 
       displayComments(comment.comments, repliesContainer);
-    } else if (comment.user == user) { buttonsElement.innerHTML += `<button onclick="deleteComment(${comment.id})" class="btn btn-danger col">Удалить комментарий</button>`;
+    } else if (comment.user == user) {
+    buttonsElement.innerHTML += `<button onclick="deleteComment(${comment.id})" class="btn btn-danger col">Удалить комментарий</button>`;
                     };
+
+    container.innerHTML += `<br>`
 
     commentElement.appendChild(buttonsElement);
 
     container.appendChild(commentElement);
-
-    container.innerHTML += `<br>`
   });
 }
 </script>
@@ -185,21 +186,13 @@ function displayComments(comments, container) {
 
         const container = document.getElementById('comments-section');
 
-        commentsText = document.createTextNode(commentsSection());
-
-        container.innerHTML = '';
-
-        container.appendChild(commentsText);
+        container.innerHTML = commentsSection();
 
         const commentsDiv = document.getElementById("commentsContainer");
 
         const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
 
-        commentsText = document.createTextNode(`Количество комментариев: ${photo.data.comment_count}`);
-
-        commentsDiv.innerHTML = '';
-
-        commentsDiv.appendChild(commentsText);
+        commentsDiv.innerHTML = `Количество комментариев: ${photo.data.comment_count}`;
     };
 </script>
 
@@ -216,11 +209,7 @@ function displayComments(comments, container) {
 
         const container = document.getElementById('comments-section');
 
-        commentsText = document.createTextNode(commentsSection());
-
-        container.innerHTML = '';
-
-        container.appendChild(commentsText);
+        container.innerHTML = commentsSection();
     };
 </script>
 
@@ -233,21 +222,13 @@ function displayComments(comments, container) {
 
         const container = document.getElementById('comments-section');
 
-        commentsText = document.createTextNode(commentsSection());
-
-        container.innerHTML = '';
-
-        container.appendChild(commentsText);
+        container.innerHTML = commentsSection();
 
         const commentsDiv = document.getElementById("commentsContainer");
 
         const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
 
-        commentsText = document.createTextNode(`Количество комментариев: ${photo.data.comment_count}`);
-
-        commentsDiv.innerHTML = '';
-
-        commentsDiv.appendChild(commentsText);
+        commentsDiv.innerHTML = `Количество комментариев: ${photo.data.comment_count}`;
     };
 </script>
 
@@ -263,19 +244,11 @@ function displayComments(comments, container) {
 
         const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
 
-        likesText = document.createTextNode(`Количество голосов: ${photo.data.like_count}`);
-
-        likesDiv.innerHTML = '';
-
-        likesDiv.appendChild(likesText);
+        likesDiv.innerHTML = `Количество голосов: ${photo.data.like_count}`;
 
         const buttonDiv = document.getElementById(`likeButton`);
 
-        buttonText = document.createTextNode('Снять голос');
-
-        buttonDiv.innerHTML = '';
-
-        buttonDiv.appendChild(buttonText);
+        buttonDiv.innerHTML = 'Снять голос';
     };
 </script>
 
@@ -291,19 +264,11 @@ function displayComments(comments, container) {
 
         const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
 
-        likesText = document.createTextNode(`Количество голосов: ${photo.data.like_count}`);
-
-        likesDiv.innerHTML = '';
-
-        likesDiv.appendChild(likesText);
+        likesDiv.innerHTML = `Количество голосов: ${photo.data.like_count}`;
 
         const buttonDiv = document.getElementById(`likeButton`);
 
-        buttonText = document.createTextNode('Оставить голос');
-
-        buttonDiv.innerHTML = '';
-
-        buttonDiv.appendChild(buttonText);
+        buttonDiv.innerHTML = 'Оставить голос';
     };
 </script>
 

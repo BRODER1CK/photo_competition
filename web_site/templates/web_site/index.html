@@ -19,14 +19,15 @@
 
               card.innerHTML = `
                   <div class="card m-2">
+                      <a href="/photo/${photo.id}">
                       <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                      </a>
                       <div class="card-body">
                           <h5 class="card-title">${photo.title}</h5>
                           <p class="card-text">Автор: ${photo.author}</p>
                           <p class="card-text">Дата публикации: ${photo.publication_date}</p>
                           <p class="card-text">Количество голосов: ${photo.like_count}</p>
                           <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                          <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
                       </div>
                   </div>
               `;

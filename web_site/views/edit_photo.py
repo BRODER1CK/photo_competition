@@ -8,4 +8,4 @@ class EditPhoto(View):
     def get(self, request, id):
         photo = RetrieveUpdateDeletePhotoView().get(request, id=id).data
         return render(request, 'web_site/edit_photo.html',
-                      {'title': 'Изменение фотографии', 'user': request.user, 'id': photo['id']})
+                      {'title': 'Изменение фотографии', 'user': request.user, 'photo': photo})
