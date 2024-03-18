@@ -70,8 +70,9 @@
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" onclick="orderBy('like_count')">По количеству голосов</a></li>
                   <li><a class="dropdown-item" onclick="orderBy('comment_count')">По количеству комментариев</a></li>
-                  <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" onclick="orderBy('updated_at')">По дате добавления</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" onclick="orderBy()">Без сортировки</a></li>
                 </ul>
               </li>
 <!--              <li class="nav-item">-->
@@ -90,8 +91,9 @@
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" onclick="filter('M')">На модерации</a></li>
                   <li><a class="dropdown-item" onclick="filter('D')">На удалении</a></li>
-                  <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" onclick="filter('P')">Одобренные</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" onclick="profilePhotos()">Без фильтрации</a></li>
                 </ul>
               </li>
             {% endif %}
@@ -144,11 +146,16 @@ async function searchPhoto() {
 
     const csrftoken = getCookie('csrftoken');
 
-    const photoId = document.getElementById("object_id").value;
-
     const photo = await axios.delete(`http://127.0.0.1:8000/api/v1/photos/${id}/`, {'headers': { 'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
 
-    window.location.replace("{% url 'web_site:profile' %}");
+    const buttonDiv = document.getElementById(`deletePhoto_${id}`);
+
+    if (buttonDiv.innerHTML == 'Удалить фотографию') {
+        buttonDiv.innerHTML = 'Восстановить фотографию';
+    } else if (buttonDiv.innerHTML == 'Восстановить фотографию') {
+        buttonDiv.innerHTML = 'Удалить фотографию';
+    };
+
     };
 </script>
 

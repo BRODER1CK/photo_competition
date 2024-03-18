@@ -107,11 +107,11 @@
 
         if (photo.status != 'D') {
             cardBody.innerHTML += `
-                <a class="btn btn-danger" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
+                <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
                 `;
         } else if (photo.status == 'D') {
             cardBody.innerHTML += `
-                <a class="btn btn-danger" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
+                <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
                 `;
         };
 

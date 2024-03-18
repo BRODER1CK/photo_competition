@@ -60,7 +60,7 @@
                 <br>
                 <a class="btn btn-secondary" href="/edit_photo/${photo.data.id}">Редактировать фотографию</a>
                 `;
-        } else if (typeof user != "undefined") {
+        } else if (user != "AnonymousUser") {
             cardBody.innerHTML += `
                 <input type="hidden" id="object_id_${photo.data.id}" value="${photo.data.id}">
                 <input type="hidden" id="content_type_${photo.data.id}" value="Photo">
@@ -69,18 +69,35 @@
                 </form>
                 <button onclick="sendComment(${photo.data.id})" class="btn btn-primary">Отправить</button>
                 <br>
-                <br>
-                <button id="likeButton" onclick="toggleLike()" class="btn btn-secondary">Оставить/снять голос</button>
                 `;
+
+                const likesList = await axios.get('http://127.0.0.1:8000/api/v1/likes/', {params: {'photo_id': '{{ id }}'}});
+
+                let isLiked = false;
+
+                for (var like of likesList.data) {
+                      if (like.user == '{{ user }}') {
+                        isLiked = true;
+                        };
+                      };
+
+                if (isLiked) {
+                    cardBody.innerHTML += `<br>
+                    <button id="likeButton" onclick="toggleLike()" class="btn btn-secondary">Снять голос</button>`
+                } else {
+                    cardBody.innerHTML += `<br>
+                    <button id="likeButton" onclick="toggleLike()" class="btn btn-secondary">Оставить голос</button>`
                 };
+
+            };
 
         if (photo.data.author == user & photo.data.status != 'D') {
             cardBody.innerHTML += `
-                <a class="btn btn-danger" onclick="deletePhoto(${photo.data.id})">Удалить фотографию</a>
+                <a class="btn btn-danger" id="deletePhoto_${photo.data.id}" onclick="deletePhoto(${photo.data.id})">Удалить фотографию</a>
                 `;
         } else if (photo.data.author == user & photo.data.status == 'D') {
             cardBody.innerHTML += `
-                <a class="btn btn-danger" onclick="deletePhoto(${photo.data.id})">Восстановить фотографию</a>
+                <a class="btn btn-danger" id="deletePhoto_${photo.data.id}" onclick="deletePhoto(${photo.data.id})">Восстановить фотографию</a>
                 `;
         };
 
@@ -238,8 +255,6 @@ function displayComments(comments, container) {
 
         const csrftoken = getCookie('csrftoken');
 
-<!--        const photo_id = document.getElementById(`object_id_${id}`).value;-->
-
         const like = await axios.post('http://127.0.0.1:8000/api/v1/likes/{{ id }}/', {},
         {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
 
@@ -252,6 +267,14 @@ function displayComments(comments, container) {
         likesDiv.innerHTML = '';
 
         likesDiv.appendChild(likesText);
+
+        const buttonDiv = document.getElementById(`likeButton`);
+
+        buttonText = document.createTextNode('Снять голос');
+
+        buttonDiv.innerHTML = '';
+
+        buttonDiv.appendChild(buttonText);
     };
 </script>
 
@@ -259,8 +282,6 @@ function displayComments(comments, container) {
     async function unlike(id) {
 
         const csrftoken = getCookie('csrftoken');
-
-<!--        const photo_id = document.getElementById(`object_id_${id}`).value;-->
 
         const like = await axios.delete('http://127.0.0.1:8000/api/v1/likes/{{ id }}/',
         {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
@@ -274,6 +295,14 @@ function displayComments(comments, container) {
         likesDiv.innerHTML = '';
 
         likesDiv.appendChild(likesText);
+
+        const buttonDiv = document.getElementById(`likeButton`);
+
+        buttonText = document.createTextNode('Оставить голос');
+
+        buttonDiv.innerHTML = '';
+
+        buttonDiv.appendChild(buttonText);
     };
 </script>
 
