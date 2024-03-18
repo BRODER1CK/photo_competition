@@ -86,15 +86,15 @@
 
         if (photo.status == 'P') {
             cardBody.innerHTML += `
-                <p class="card-text">Дата публикации: ${photo.publication_date}</p>
+                <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
                 `;
             } else if (photo.status == 'M') {
             cardBody.innerHTML += `
-                <p class="card-text">На модерации</p>
+                <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
                 `;
             } else if (photo.status == 'D') {
             cardBody.innerHTML += `
-                <p class="card-text">На удалении</p>
+                <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
                 `;
             };
 

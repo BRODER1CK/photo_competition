@@ -150,6 +150,14 @@ async function searchPhoto() {
 
     const buttonDiv = document.getElementById(`deletePhoto_${id}`);
 
+    const statusDiv = document.getElementById(`statusDiv_${id}`);
+
+    if (statusDiv.innerHTML == 'На удалении') {
+        statusDiv.innerHTML = 'На модерации';
+    } else {
+        statusDiv.innerHTML = 'На удалении';
+    };
+
     if (buttonDiv.innerHTML == 'Удалить фотографию') {
         buttonDiv.innerHTML = 'Восстановить фотографию';
     } else if (buttonDiv.innerHTML == 'Восстановить фотографию') {
@@ -180,12 +188,12 @@ async function filter(status) {
                         <div class="card-body">
                             <h5 class="card-title">${photo.title}</h5>
                             <p class="card-text">Автор: ${photo.author}</p>
-                            <p class="card-text">На модерации</p>
+                            <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
                             <p class="card-text">Количество голосов: ${photo.like_count}</p>
                             <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
                             <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
                             <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                            <a class="btn btn-danger" href="/delete_photo/${photo.id}">Удалить фотографию</a>
+                            <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
                         </div>
                     </div>
                     `;
@@ -200,12 +208,12 @@ async function filter(status) {
                         <div class="card-body">
                             <h5 class="card-title">${photo.title}</h5>
                             <p class="card-text">Автор: ${photo.author}</p>
-                            <p class="card-text">На удалении</p>
+                            <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
                             <p class="card-text">Количество голосов: ${photo.like_count}</p>
                             <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
                             <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
                             <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                            <a class="btn btn-danger" href="/delete_photo/${photo.id}">Восстановить фотографию</a>
+                            <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
                         </div>
                     </div>
                     `;
@@ -220,12 +228,12 @@ async function filter(status) {
                         <div class="card-body">
                             <h5 class="card-title">${photo.title}</h5>
                             <p class="card-text">Автор: ${photo.author}</p>
-                            <p class="card-text">Дата публикации: ${photo.publication_date}</p>
+                            <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
                             <p class="card-text">Количество голосов: ${photo.like_count}</p>
                             <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
                             <a class="btn btn-secondary" href="/photo/${photo.id}">Смотреть фотографию</a>
                             <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                            <a class="btn btn-danger" href="/delete_photo/${photo.id}">Удалить фотографию</a>
+                            <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
                         </div>
                     </div>
                 `;
