@@ -5,8 +5,11 @@ from django.contrib.auth.admin import UserAdmin
 from models_app.models.comment import Comment
 from models_app.models.photo import Photo
 from models_app.models.user import User
+from notifications.views import send_notification
 
 admin.site.register(User, UserAdmin)
+admin.site.site_header = 'Административная панель'
+admin.site.index_title = 'Сайт с фотоконкурсом'
 
 
 @admin.register(Comment)
@@ -54,12 +57,21 @@ class PhotoAdmin(admin.ModelAdmin):
         else:
             return 'Без фото'
 
-    @admin.action(description='Опубликовать выбранные Фотографии')
+    @admin.action(description='Опубликовать выбранные фотографии')
     def set_published(self, request, queryset):
         count = queryset.update(status='P')
+        for photo in queryset:
+            send_notification(photo.user.id, 'Ваша фотография одобрена')
         self.message_user(request, f'Изменено {count} записей')
 
-    @admin.action(description='Снять с публикации выбранные Фотографии')
+    @admin.action(description='Снять с публикации выбранные фотографии')
     def set_awaits(self, request, queryset):
         count = queryset.update(status='M')
         self.message_user(request, f'{count} записей снято с публикации', messages.WARNING)
+
+    @admin.action(description='Удалить выбранные фотографии')
+    def delete_queryset(self, request, queryset):
+        count = queryset.delete()
+        for photo in queryset:
+            send_notification(photo.user.id, 'Ваша фотография удалена')
+        self.message_user(request, f'Изменено {count} записей')

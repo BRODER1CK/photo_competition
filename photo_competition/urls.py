@@ -15,7 +15,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.http import HttpResponseNotFound
 from django.urls import path, include
 from django.conf.urls.static import static
 
@@ -40,18 +39,10 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('admin/', admin.site.urls),
-    path('', include('web_site.urls')),
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('api/', include('api.urls')),
+    path('', include('web_site.urls')),
 ]
 
 if DEBUG:
     urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
-
-def page_not_found(request, exception):
-    return HttpResponseNotFound('<h1>Страница не найдена</h1>')
-
-handler404 = page_not_found
-
-admin.site.site_header = 'Административная панель'
-admin.site.index_title = 'Сайт с фотоконкурсом'

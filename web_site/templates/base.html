@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="shortcut icon" href="{% static 'web_site/images/main.ico' %}" type="image/x-icon"/>
-    <title>{{ title }}</title>
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
@@ -100,76 +99,59 @@
             </li>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" id="search" placeholder="Поиск" aria-label="Search">
-              <a href="#" class="btn btn-outline-success" onclick="searchPhoto()">Найти</a>
+              <a href="#" class="btn btn-outline-success" onclick="getPhotos(photos)">Найти</a>
             </form>
             {% elif request.path  == '/profile/' %}
-              <li class="nav-item dropdown" style="list-style-type:none;">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Фильтрация
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" onclick="filter('M')">На модерации</a></li>
-                  <li><a class="dropdown-item" onclick="filter('D')">На удалении</a></li>
-                  <li><a class="dropdown-item" onclick="filter('P')">Одобренные</a></li>
+            <li class="nav-item dropdown" style="list-style-type:none;">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Фильтрация
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <div id="formCheck">
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="M">
+                  <label class="form-check-label" for="flexRadioDefault1">На модерации</label>
+                  </div>
+                  </li>
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="D">
+                  <label class="form-check-label" for="flexRadioDefault2">На удалении</label>
+                  </div>
+                  </li>
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="P">
+                  <label class="form-check-label" for="flexRadioDefault3">Опубликованные</label>
+                  </div>
+                  </li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" onclick="profilePhotos()">Без фильтрации</a></li>
-                </ul>
-              </li>
+                  <li>
+                  <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" value="" checked>
+                  <label class="form-check-label" for="flexRadioDefault4">Без фильтрации</label>
+                  </div>
+                  </li>
+                </div>
+              </ul>
+            </li>
+            <a href="#" class="btn btn-outline-success" onclick="getProfilePhotos(profilePhotos)">Фильтровать</a>
             {% endif %}
           </div>
         </div>
     </nav>
     {% endblock %}
+    <input type="hidden" id="user" value="{{ user }}">
     {% block content %}
     {% endblock %}
-    {% block pagination %}
+    {% block navigation %}
+    <nav>
+       <ul class="pagination justify-content-center" id="pagination"></ul>
+    </nav>
     {% endblock %}
   </body>
 </html>
-
-<script>
-async function searchPhoto() {
-
-  const gallery = document.getElementById('gallery');
-
-  const search = document.getElementById("search").value;
-
-  if (search.length < 3 & search.length != 0) {
-    alert("Слишком короткий поисковый запрос! Минимум 3 символа");
-    return;
-    };
-
-  gallery.innerHTML = ""
-
-  const ordering = document.querySelector('input[name="flexRadioDefault"]:checked').value;
-
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'search': search, 'ordering': ordering, 'ordering_direction': 'desc'}});
-
-  for (var photo of photos.data.results) {
-        if (photo.status == 'P') {
-        const card = document.createElement('div');
-        card.classList.add('col-md-4', 'mb-3');
-
-        card.innerHTML = `
-            <div class="card m-2">
-                <a href="/photo/${photo.id}">
-                <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                </a>
-                <div class="card-body">
-                    <h5 class="card-title">${photo.title}</h5>
-                    <p class="card-text">Автор: ${photo.author}</p>
-                    <p class="card-text">Дата публикации: ${photo.publication_date}</p>
-                    <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                    <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                </div>
-            </div>
-        `;
-
-        gallery.appendChild(card);
-        };
-        };
-  };
-</script>
 
 <script>
     async function deletePhoto(id) {
@@ -201,124 +183,7 @@ async function searchPhoto() {
 </script>
 
 <script>
-async function filter(status) {
-    document.getElementById("gallery").innerHTML = ""
-
-    const gallery = document.getElementById('gallery');
-
-    const author = document.getElementById("user").value;
-
-    const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
-
-    for (var photo of photos.data.results) {
-        if (photo.author == author) {
-            if (photo.status == status & status == 'M') {
-                const card = document.createElement('div');
-                card.classList.add('col-md-4', 'mb-3');
-                card.innerHTML = `
-                    <div class="card m-2">
-                        <a href="/photo/${photo.id}">
-                        <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">${photo.title}</h5>
-                            <p class="card-text">Автор: ${photo.author}</p>
-                            <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
-                            <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                            <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
-                        </div>
-                    </div>
-                    `;
-
-                gallery.appendChild(card);
-            } else if (photo.status == status & status == 'D') {
-                const card = document.createElement('div');
-                card.classList.add('col-md-4', 'mb-3');
-                card.innerHTML = `
-                    <div class="card m-2">
-                        <a href="/photo/${photo.id}">
-                        <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">${photo.title}</h5>
-                            <p class="card-text">Автор: ${photo.author}</p>
-                            <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
-                            <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                            <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
-                        </div>
-                    </div>
-                    `;
-
-                gallery.appendChild(card);
-            } else if (photo.status == status & status == 'P') {
-                const card = document.createElement('div');
-                card.classList.add('col-md-4', 'mb-3');
-                card.innerHTML = `
-                    <div class="card m-2">
-                        <a href="/photo/${photo.id}">
-                        <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">${photo.title}</h5>
-                            <p class="card-text">Автор: ${photo.author}</p>
-                            <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
-                            <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-                            <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
-                        </div>
-                    </div>
-                `;
-
-                gallery.appendChild(card);
-            };
-        };
-    };
-};
-</script>
-
-<script>
-async function orderBy(parameter) {
-  document.getElementById("gallery").innerHTML = ""
-
-  const gallery = document.getElementById('gallery');
-
-  const search = document.getElementById("search").value;
-
-  const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/', {params: {'search': search, 'ordering': parameter, 'ordering_direction': 'desc'}});
-
-  for (var photo of photos.data.results) {
-        if (photo.status == 'P') {
-        const card = document.createElement('div');
-        card.classList.add('col-md-4', 'mb-3');
-
-        card.innerHTML = `
-            <div class="card m-2">
-                <a href="/photo/${photo.id}">
-                <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                </a>
-                <div class="card-body">
-                    <h5 class="card-title">${photo.title}</h5>
-                    <p class="card-text">Автор: ${photo.author}</p>
-                    <p class="card-text">Дата публикации: ${photo.publication_date}</p>
-                    <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                    <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                </div>
-            </div>
-        `;
-
-        gallery.appendChild(card);
-        };
-        };
-  };
-</script>
-
-<script>
-    function getCookie(name) {
+function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
         var cookies = document.cookie.split(';');
@@ -336,5 +201,12 @@ async function orderBy(parameter) {
 </script>
 
 <script>
+const user_id = '{{ user.id }}';
 
+if (user_id != 'None') {
+  const ws = new WebSocket(`ws://localhost:8000/ws/notifications/${user_id}/`);
+  ws.onmessage = function(event) {
+  alert(event.data);
+  };
+};
 </script>

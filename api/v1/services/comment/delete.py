@@ -6,6 +6,7 @@ from service_objects.services import ServiceWithResult
 
 from models_app.models.comment import Comment
 from models_app.models.user import User
+from notifications.views import send_notification
 
 
 class CommentDeleteService(ServiceWithResult):
@@ -21,6 +22,11 @@ class CommentDeleteService(ServiceWithResult):
 
     def delete_comment(self):
         comment = self.comment()
+        parent = comment.content_object
+        while parent.__class__.__name__ != 'Photo':
+            parent = parent.content_object
+        send_notification(self.user().id,
+                          f'Пользователь {self.user()} удалил комментарий к Вашей фотографии. Количество комментариев: {parent.comment_count}')
         return comment.delete()
 
     def comment(self):

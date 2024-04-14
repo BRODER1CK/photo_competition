@@ -2,8 +2,9 @@
 
 {% block content %}
 <input type="hidden" id="photoId" value="{{ photo.id }}">
+<title>{{ title }}</title>
 <div class="container mt-5">
-    <h1 class="mb-4">{{ title }}</h1>
+    <h1 class="mb-4">Изменение фотографии</h1>
        <form id="photoForm" enctype="multipart/form-data">
        {% csrf_token %}
            <div class="mb-3">
@@ -38,9 +39,4 @@
         window.location.replace("{% url 'web_site:profile' %}");
     };
 </script>
-
-<!--<script>-->
-<!--    var el = document.getElementById("editButton");-->
-<!--    el.addEventListener("onclick", editPhoto);-->
-<!--</script>-->
 {% endblock %}

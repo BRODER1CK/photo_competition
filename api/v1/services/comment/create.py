@@ -10,6 +10,8 @@ from models_app.models.photo import Photo
 from models_app.models.user import User
 from django.apps import apps
 
+from notifications.views import send_notification
+
 
 class CommentCreateService(ServiceWithResult):
     text = forms.CharField(max_length=255)
@@ -25,12 +27,21 @@ class CommentCreateService(ServiceWithResult):
         return self
 
     def create_comment(self):
-        return Comment.objects.create(user=self.cleaned_data['current_user'],
+        comment = Comment.objects.create(user=self.user(),
                                       text=self.cleaned_data['text'],
                                       content_type=ContentType.objects.get_for_model(
                                           apps.get_model('models_app',
                                                          self.cleaned_data['content_type'])),
                                       object_id=self.cleaned_data['object_id'])
+        parent = comment.content_object
+        while parent.__class__.__name__ != 'Photo':
+            parent = parent.content_object
+        send_notification(self.user().id,
+                          f'Пользователь {self.user()} оставил комментарий к Вашей фотографии. Количество комментариев: {parent.comment_count}')
+        return comment
+
+    def user(self):
+        return self.cleaned_data.get('current_user')
 
     def validate_comments(self):
         if self.cleaned_data['content_type'] == 'Comment' and not Comment.objects.filter(

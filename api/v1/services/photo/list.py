@@ -16,6 +16,10 @@ class PhotoListService(ServiceWithResult):
                                           ('updated_at', 'updated_at'),
                                           ('comment_count', 'comment_count')), required=False)
     ordering_direction = forms.ChoiceField(choices=(('asc', 'asc'), ('desc', 'desc')), required=False)
+    profile_photos = forms.BooleanField(required=False, initial=False)
+    filtering = forms.ChoiceField(choices=(('M', 'M'),
+                                          ('P', 'P'),
+                                          ('D', 'D')), required=False)
     search = forms.CharField(required=False, min_length=3)
     current_user = ModelField(User, required=False)
 
@@ -42,6 +46,8 @@ class PhotoListService(ServiceWithResult):
         photos = Photo.objects.all()
         ordering = 'updated_at'
         ordering_direction = 'desc'
+        profile_photos = self.cleaned_data.get('profile_photos')
+        filtering = self.cleaned_data.get('filtering')
         search = self.cleaned_data.get('search')
         if search:
             photos = photos.filter(Q(user__username__icontains=search) |
@@ -55,6 +61,11 @@ class PhotoListService(ServiceWithResult):
             ordering = '-' + ordering
         if not self.user():
             photos = photos.filter(status='P')
+        elif self.user() and profile_photos:
+            if filtering:
+                photos = photos.filter(user=self.user(), status=filtering)
+            else:
+                photos = photos.filter(user=self.user())
         elif self.user() and not self.user().is_superuser:
             photos = photos.filter(Q(status='P') | Q(user=self.user()))
         return photos.order_by(ordering)

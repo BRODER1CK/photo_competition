@@ -1,44 +1,129 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<title>Главная страница</title>
 <div id="gallery" class="row">
 </div>
 
 <script>
-    async function photos() {
-        document.getElementById("gallery").innerHTML = ""
+async function photos(data) {
+    document.getElementById("gallery").innerHTML = ""
 
-        const gallery = document.getElementById('gallery');
+    const gallery = document.getElementById('gallery');
 
-        const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
+    for (var photo of data) {
+        if (photo.status == 'M') {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-3');
+            card.innerHTML = `
+                <div class="card m-2">
+                    <a href="/photo/${photo.id}">
+                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">${photo.title}</h5>
+                        <p class="card-text">Автор: ${photo.author}</p>
+                        <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
+                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                    </div>
+                </div>
+                `;
 
-        for (var photo of photos.data.results) {
-              if (photo.status == 'P') {
-              const card = document.createElement('div');
-              card.classList.add('col-md-4', 'mb-3');
+            gallery.appendChild(card);
+        } else if (photo.status == 'D') {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-3');
+            card.innerHTML = `
+                <div class="card m-2">
+                    <a href="/photo/${photo.id}">
+                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">${photo.title}</h5>
+                        <p class="card-text">Автор: ${photo.author}</p>
+                        <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
+                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                    </div>
+                </div>
+                `;
 
-              card.innerHTML = `
-                  <div class="card m-2">
-                      <a href="/photo/${photo.id}">
-                      <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-                      </a>
-                      <div class="card-body">
-                          <h5 class="card-title">${photo.title}</h5>
-                          <p class="card-text">Автор: ${photo.author}</p>
-                          <p class="card-text">Дата публикации: ${photo.publication_date}</p>
-                          <p class="card-text">Количество голосов: ${photo.like_count}</p>
-                          <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-                      </div>
-                  </div>
-              `;
+            gallery.appendChild(card);
+        } else if (photo.status == 'P') {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-3');
+            card.innerHTML = `
+                <div class="card m-2">
+                    <a href="/photo/${photo.id}">
+                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">${photo.title}</h5>
+                        <p class="card-text">Автор: ${photo.author}</p>
+                        <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
+                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                    </div>
+                </div>
+            `;
 
-              gallery.appendChild(card);
-              };
-              };
+            gallery.appendChild(card);
         };
+    };
+};
 </script>
 
 <script>
-    window.onload = photos()
+let currentPage = 1;
+const perPage = 3;
+
+async function getPhotos(showPhotosFunc) {
+  const search = document.getElementById("search").value;
+  if (search.length < 3 & search.length != 0) {
+    alert("Слишком короткий поисковый запрос! Минимум 3 символа");
+    return;
+    };
+  const ordering = document.querySelector('input[name="flexRadioDefault"]:checked').value;
+  const response = await axios.get(`http://127.0.0.1:8000/api/v1/photos/?page=${currentPage}&per_page=${perPage}`,
+  {params: {'search': search, 'ordering': ordering, 'ordering_direction': 'desc'}});
+  const data = response.data.results;
+  const pagination = response.data.pagination;
+  showPhotosFunc(data);
+  showPagination(pagination, showPhotosFunc);
+};
+
+function showPagination(pagination, showPhotosFunc) {
+  const div = document.getElementById('pagination');
+  div.innerHTML = '';
+  lastPage = pagination.total_pages;
+  dataFunc = showPhotosFunc;
+
+    if (pagination.prev_page) {
+      const firstButton = document.createElement('li');
+      firstButton.classList.add('page-item');
+      firstButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage = 1;getPhotos(dataFunc);"><<</a>`;
+      div.appendChild(firstButton);
+      const prevButton = document.createElement('li');
+      prevButton.classList.add('page-item');
+      prevButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage--;getPhotos(dataFunc);"><</a>`;
+      div.appendChild(prevButton);
+      };
+
+    if (pagination.next_page) {
+      const nextButton = document.createElement('li');
+      nextButton.classList.add('page-item');
+      nextButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage++;getPhotos(dataFunc);">></a>`;
+      div.appendChild(nextButton);
+      const lastButton = document.createElement('li');
+      lastButton.classList.add('page-item');
+      lastButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage = lastPage;getPhotos(dataFunc);">>></a>`;
+      div.appendChild(lastButton);
+      };
+};
+</script>
+
+<script>
+    window.onload = getPhotos(photos);
 </script>
 {% endblock %}

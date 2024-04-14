@@ -68,6 +68,19 @@ LIST_PHOTO_DOC = {
                     enum=['asc', 'desc'],
                 ),
         openapi.Parameter(
+            name="profile_photos",
+            in_=openapi.IN_QUERY,
+            description="Profile photos",
+            type=openapi.TYPE_BOOLEAN,
+        ),
+        openapi.Parameter(
+            name="filtering",
+            in_=openapi.IN_QUERY,
+            description="Filtering",
+            type=openapi.TYPE_STRING,
+            enum=['M', 'P', 'D'],
+        ),
+        openapi.Parameter(
             name="search",
             in_=openapi.IN_QUERY,
             description="Search",

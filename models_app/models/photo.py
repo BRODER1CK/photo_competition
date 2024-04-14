@@ -36,6 +36,9 @@ class Photo(models.Model):
     objects = models.Manager()
     published = PublishedManager()
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         verbose_name = 'Photo'
         verbose_name_plural = 'Photos'
@@ -44,9 +47,3 @@ class Photo(models.Model):
         indexes = [
             models.Index(fields=['-updated_at'])
         ]
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('web_site:photo', kwargs={'photo_id': self.id})

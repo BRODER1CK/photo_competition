@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+.is-invalid {
+  border: 1px solid red;
+}
+</style>
 <div class="container mt-5">
-    <h1 class="mb-4">{{ title }}</h1>
+    <h1 class="mb-4">Добавление фотографии</h1>
        <form id="photoForm" enctype="multipart/form-data">
        {% csrf_token %}
            <div class="mb-3">
                <label for="title" class="form-label">Название</label>
-               <input type="text" class="form-control" name="title" id="title">
+               <input type="text" class="form-control" name="title" id="title" required>
            </div>
            <div class="mb-3">
                <label for="description" class="form-label">Описание</label>
@@ -15,11 +20,32 @@
            </div>
            <div class="mb-3">
                <label for="current_photo" class="form-label">Фотография</label>
-               <input type="file" class="form-control" accept="image/*" name="current_photo" id="current_photo">
+               <input type="file" class="form-control" accept="image/*" name="current_photo" id="current_photo" required>
            </div>
        </form>
-       <button id="editButton" class="btn btn-primary" onclick="sendPhoto()">Отправить</button>
+       <button id="editButton" class="btn btn-primary" onclick="validateForm()">Отправить</button>
    </div>
+
+<script>
+function validateForm() {
+  let form = document.getElementById("photoForm");
+  let inputs = form.querySelectorAll('[required]');
+
+  let isValid = true;
+
+  inputs.forEach(input => {
+    if (input.value.trim() === '') {
+      input.classList.add('is-invalid');
+      isValid = false;
+    }
+  });
+
+  if (!isValid) {
+    alert('Пожалуйста, заполните все обязательные поля');
+  } else {
+    return sendPhoto() };
+}
+</script>
 
 <script>
     async function sendPhoto() {
@@ -35,9 +61,4 @@
         window.location.replace("{% url 'web_site:profile' %}");
     };
 </script>
-
-<!--<script>-->
-<!--    var el = document.getElementById("sendButton");-->
-<!--    el.addEventListener("onclick", sendPhoto);-->
-<!--</script>-->
 {% endblock %}

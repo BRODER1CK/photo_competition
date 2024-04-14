@@ -2,6 +2,7 @@
 
 {% block content %}
 <input type="hidden" id="user" value="{{ user }}">
+<title>{{ photo.title }}</title>
 <div id="gallery" class="row">
 </div>
 
@@ -16,7 +17,7 @@
 
         const user = document.getElementById('user').value;
 
-        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ photo.id }}/');
 
         const div = document.createElement('div');
         div.classList.add('mb-3');
@@ -71,7 +72,7 @@
                 <br>
                 `;
 
-                const likesList = await axios.get('http://127.0.0.1:8000/api/v1/likes/', {params: {'photo_id': '{{ id }}'}});
+                const likesList = await axios.get('http://127.0.0.1:8000/api/v1/likes/', {params: {'photo_id': '{{ photo.id }}'}});
 
                 let isLiked = false;
 
@@ -115,7 +116,7 @@
 
     const container = document.getElementById('comments-section');
 
-    axios.get('http://127.0.0.1:8000/api/v1/comments/', {params: {'content_type': 'Photo', 'object_id': '{{ id }}'}})
+    axios.get('http://127.0.0.1:8000/api/v1/comments/', {params: {'content_type': 'Photo', 'object_id': '{{ photo.id }}'}})
   .then(response => {
     comments = response.data
     displayComments(comments, container);
@@ -190,7 +191,7 @@ function displayComments(comments, container) {
 
         const commentsDiv = document.getElementById("commentsContainer");
 
-        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ photo.id }}/');
 
         commentsDiv.innerHTML = `Количество комментариев: ${photo.data.comment_count}`;
     };
@@ -226,7 +227,7 @@ function displayComments(comments, container) {
 
         const commentsDiv = document.getElementById("commentsContainer");
 
-        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ photo.id }}/');
 
         commentsDiv.innerHTML = `Количество комментариев: ${photo.data.comment_count}`;
     };
@@ -237,12 +238,12 @@ function displayComments(comments, container) {
 
         const csrftoken = getCookie('csrftoken');
 
-        const like = await axios.post('http://127.0.0.1:8000/api/v1/likes/{{ id }}/', {},
+        const like = await axios.post('http://127.0.0.1:8000/api/v1/likes/{{ photo.id }}/', {},
         {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
 
         const likesDiv = document.getElementById("likesContainer");
 
-        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ photo.id }}/');
 
         likesDiv.innerHTML = `Количество голосов: ${photo.data.like_count}`;
 
@@ -257,12 +258,12 @@ function displayComments(comments, container) {
 
         const csrftoken = getCookie('csrftoken');
 
-        const like = await axios.delete('http://127.0.0.1:8000/api/v1/likes/{{ id }}/',
+        const like = await axios.delete('http://127.0.0.1:8000/api/v1/likes/{{ photo.id }}/',
         {'headers': {'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
 
         const likesDiv = document.getElementById("likesContainer");
 
-        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ id }}/');
+        const photo = await axios.get('http://127.0.0.1:8000/api/v1/photos/{{ photo.id }}/');
 
         likesDiv.innerHTML = `Количество голосов: ${photo.data.like_count}`;
 
@@ -274,7 +275,7 @@ function displayComments(comments, container) {
 
 <script>
 async function toggleLike() {
-    const likesList = await axios.get('http://127.0.0.1:8000/api/v1/likes/', {params: {'photo_id': '{{ id }}'}});
+    const likesList = await axios.get('http://127.0.0.1:8000/api/v1/likes/', {params: {'photo_id': '{{ photo.id }}'}});
 
     let isLiked = false;
 

@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<input type="hidden" id="user" value="{{ profile }}">
-<title>{{ title }}</title>
+<title>Профиль</title>
 <style>
   .profile-card {
-    max-width: 400px;
+    max-width: 472.5px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    margin-left: 9px;
   }
 
   .profile-picture {
@@ -35,16 +35,15 @@
 }
 </style>
 <div class="profile-card">
-    {% if profile.avatar %}
-    <img src="{{ profile.avatar }}" alt="Profile Picture" class="profile-picture">
+    {% if user.avatar %}
+    <img src="{{ user.avatar }}" alt="Profile Picture" class="profile-picture">
     {% else %}
     <img src="{{ default_image }}" alt="Profile Picture" class="profile-picture">
     {% endif %}
-    <div class="profile-name">{{ profile.first_name }} {{ profile.last_name }}</div>
-    <div class="profile-email">{{ profile.email }}</div>
-    <div id='tokenContainer' class="text">{{ profile.token }}</div>
+    <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
+    <div class="profile-email">{{ user.email }}</div>
+    <div id='tokenContainer' class="text">{{ user.token }}</div>
     <a class="btn btn-secondary" onclick="generate_token()">Генерировать токен</a>
-  </div>
 </div>
 <div id="gallery" class="row">
 </div>
@@ -53,77 +52,136 @@
 </div>
 
 <script>
-    async function profilePhotos() {
-        document.getElementById("gallery").innerHTML = ""
+async function profilePhotos(data) {
+    document.getElementById("gallery").innerHTML = ""
 
-        const gallery = document.getElementById('gallery');
+    const gallery = document.getElementById('gallery');
 
-        const user = document.getElementById('user').value;
-
-        const photos = await axios.get('http://127.0.0.1:8000/api/v1/photos/');
-
-        for (var photo of photos.data.results) {
-              if (photo.author == user) {
-              const div = document.createElement('div');
-        div.classList.add('col-md-4', 'mb-3');
-
-        const card = document.createElement('div');
-        card.classList.add('card', 'm-2');
-
-        card.innerHTML = `
-            <a href="/photo/${photo.id}">
-            <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
-            </a>
-        `;
-
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card-body');
-
-        cardBody.innerHTML = `
-            <input type="hidden" id="object_id" value="{{ photo.id }}">
-            <h5 class="card-title">${photo.title}</h5>
-            <p class="card-text">Автор: ${photo.author}</p>
-        `;
-
-
-        if (photo.status == 'P') {
-            cardBody.innerHTML += `
-                <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
+    for (var photo of data) {
+        if (photo.status == 'M') {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-3');
+            card.innerHTML = `
+                <div class="card m-2">
+                    <a href="/photo/${photo.id}">
+                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">${photo.title}</h5>
+                        <p class="card-text">Автор: ${photo.author}</p>
+                        <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
+                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                        <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+                        <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
+                    </div>
+                </div>
                 `;
-            } else if (photo.status == 'M') {
-            cardBody.innerHTML += `
-                <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
+
+            gallery.appendChild(card);
+        } else if (photo.status == 'D') {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-3');
+            card.innerHTML = `
+                <div class="card m-2">
+                    <a href="/photo/${photo.id}">
+                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">${photo.title}</h5>
+                        <p class="card-text">Автор: ${photo.author}</p>
+                        <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
+                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                        <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+                        <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
+                    </div>
+                </div>
                 `;
+
+            gallery.appendChild(card);
+        } else if (photo.status == 'P') {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-3');
+            card.innerHTML = `
+                <div class="card m-2">
+                    <a href="/photo/${photo.id}">
+                    <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">${photo.title}</h5>
+                        <p class="card-text">Автор: ${photo.author}</p>
+                        <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
+                        <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                        <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                        <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+                        <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
+                    </div>
+                </div>
+            `;
+
+            gallery.appendChild(card);
+        } else if (photo.status == '') {
+            const div = document.createElement('div');
+            div.classList.add('col-md-4', 'mb-3');
+
+            const card = document.createElement('div');
+            card.classList.add('card', 'm-2');
+
+            card.innerHTML = `
+                <a href="/photo/${photo.id}">
+                <img src="${photo.current_photo}" class="card-img-top" alt=${photo.title} data-toggle="tooltip" title=${photo.description}>
+                </a>
+            `;
+
+            const cardBody = document.createElement('div');
+            cardBody.classList.add('card-body');
+
+            cardBody.innerHTML = `
+                <input type="hidden" id="object_id" value="{{ photo.id }}">
+                <h5 class="card-title">${photo.title}</h5>
+                <p class="card-text">Автор: ${photo.author}</p>
+            `;
+
+
+            if (photo.status == 'P') {
+                cardBody.innerHTML += `
+                    <p id='statusDiv_${photo.id}' class="card-text">Дата публикации: ${photo.publication_date}</p>
+                    `;
+                } else if (photo.status == 'M') {
+                cardBody.innerHTML += `
+                    <p id='statusDiv_${photo.id}' class="card-text">На модерации</p>
+                    `;
+                } else if (photo.status == 'D') {
+                cardBody.innerHTML += `
+                    <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
+                    `;
+                };
+
+            cardBody.innerHTML += `
+                <p class="card-text">Количество голосов: ${photo.like_count}</p>
+                <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
+                <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
+            `;
+
+            if (photo.status != 'D') {
+                cardBody.innerHTML += `
+                    <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
+                    `;
             } else if (photo.status == 'D') {
-            cardBody.innerHTML += `
-                <p id='statusDiv_${photo.id}' class="card-text">На удалении</p>
-                `;
+                cardBody.innerHTML += `
+                    <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
+                    `;
             };
 
-        cardBody.innerHTML += `
-            <p class="card-text">Количество голосов: ${photo.like_count}</p>
-            <p class="card-text">Количество комментариев: ${photo.comment_count}</p>
-            <a class="btn btn-primary" href="/edit_photo/${photo.id}">Редактировать фотографию</a>
-        `;
+            card.appendChild(cardBody);
 
-        if (photo.status != 'D') {
-            cardBody.innerHTML += `
-                <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Удалить фотографию</a>
-                `;
-        } else if (photo.status == 'D') {
-            cardBody.innerHTML += `
-                <a class="btn btn-danger" id="deletePhoto_${photo.id}" onclick="deletePhoto(${photo.id})">Восстановить фотографию</a>
-                `;
+            div.appendChild(card);
+
+            gallery.appendChild(div);
         };
-
-        card.appendChild(cardBody);
-
-        div.appendChild(card);
-
-        gallery.appendChild(div);
-              };
-              };
-        };
+    };
+};
 </script>
 
 <script>
@@ -143,6 +201,50 @@
 </script>
 
 <script>
-    window.onload = profilePhotos()
+let currentPage = 1;
+const perPage = 3;
+
+async function getProfilePhotos(showPhotosFunc) {
+  const filtering = document.querySelector('input[name="flexRadioDefault"]:checked').value;
+  const response = await axios.get(`http://127.0.0.1:8000/api/v1/photos/?page=${currentPage}&per_page=${perPage}`,
+  {params: {'profile_photos': true, 'filtering': filtering}});
+  const data = response.data.results;
+  const pagination = response.data.pagination;
+  showPhotosFunc(data);
+  showPagination(pagination, showPhotosFunc);
+};
+
+function showPagination(pagination, showPhotosFunc) {
+  const div = document.getElementById('pagination');
+  div.innerHTML = '';
+  lastPage = pagination.total_pages;
+  dataFunc = showPhotosFunc;
+
+    if (pagination.prev_page) {
+      const firstButton = document.createElement('li');
+      firstButton.classList.add('page-item');
+      firstButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage = 1;getProfilePhotos(dataFunc);"><<</a>`;
+      div.appendChild(firstButton);
+      const prevButton = document.createElement('li');
+      prevButton.classList.add('page-item');
+      prevButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage--;getProfilePhotos(dataFunc);"><</a>`;
+      div.appendChild(prevButton);
+      };
+
+    if (pagination.next_page) {
+      const nextButton = document.createElement('li');
+      nextButton.classList.add('page-item');
+      nextButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage++;getProfilePhotos(dataFunc);">></a>`;
+      div.appendChild(nextButton);
+      const lastButton = document.createElement('li');
+      lastButton.classList.add('page-item');
+      lastButton.innerHTML = `<a class="page-link" href="#" onclick="currentPage = lastPage;getProfilePhotos(dataFunc);">>></a>`;
+      div.appendChild(lastButton);
+      };
+};
+</script>
+
+<script>
+    window.onload = getProfilePhotos(profilePhotos);
 </script>
 {% endblock %}
