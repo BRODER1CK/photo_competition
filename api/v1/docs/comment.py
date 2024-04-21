@@ -30,7 +30,7 @@ LIST_COMMENT_DOC = {
             in_=openapi.IN_QUERY,
             description="Content type",
             type=openapi.TYPE_STRING,
-            enum=['Photo', 'Comment'],
+            enum=["Photo", "Comment"],
         ),
         openapi.Parameter(
             name="object_id",
@@ -53,5 +53,5 @@ DELETE_COMMENT_DOC = {
     "tags": ["comment"],
     "operation_id": "Comment delete",
     "operation_description": "Delete comment",
-    "responses": {200: openapi.Response("Success", None)}
+    "responses": {200: openapi.Response("Success", None)},
 }

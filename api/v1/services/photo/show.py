@@ -11,7 +11,7 @@ from models_app.models.user import User
 class PhotoShowService(ServiceWithResult):
     id = forms.IntegerField(min_value=1)
     current_user = ModelField(User, required=False)
-    custom_validations = ['validate_user']
+    custom_validations = ["validate_user"]
 
     def process(self):
         self.run_custom_validations()
@@ -20,18 +20,30 @@ class PhotoShowService(ServiceWithResult):
         return self
 
     def photo(self):
-        return Photo.objects.get(id=self.cleaned_data['id'])
+        return Photo.objects.get(id=self.cleaned_data["id"])
 
     def user(self):
-        return self.cleaned_data.get('current_user')
+        return self.cleaned_data.get("current_user")
 
     def validate_user(self):
-        if (self.user()
-                and not self.user().is_superuser
-                and self.photo().status != 'P'
-                and self.photo().user != self.user()):
-            self.add_error('id', ObjectDoesNotExist(f'Photo with id = {self.cleaned_data["id"]} does not exist'))
+        if (
+            self.user()
+            and not self.user().is_superuser
+            and self.photo().status != "P"
+            and self.photo().user != self.user()
+        ):
+            self.add_error(
+                "id",
+                ObjectDoesNotExist(
+                    f'Photo with id = {self.cleaned_data["id"]} does not exist'
+                ),
+            )
             self.response_status = status.HTTP_404_NOT_FOUND
-        elif not self.user() and self.photo().status != 'P':
-            self.add_error('id', ObjectDoesNotExist(f'Photo with id = {self.cleaned_data["id"]} does not exist'))
+        elif not self.user() and self.photo().status != "P":
+            self.add_error(
+                "id",
+                ObjectDoesNotExist(
+                    f'Photo with id = {self.cleaned_data["id"]} does not exist'
+                ),
+            )
             self.response_status = status.HTTP_404_NOT_FOUND

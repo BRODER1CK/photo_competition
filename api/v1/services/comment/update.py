@@ -12,7 +12,7 @@ class CommentUpdateService(ServiceWithResult):
     text = forms.CharField(max_length=255)
     id = forms.IntegerField(min_value=1)
     current_user = ModelField(User)
-    custom_validations = ['validate_user']
+    custom_validations = ["validate_user"]
 
     def process(self):
         self.run_custom_validations()
@@ -22,18 +22,18 @@ class CommentUpdateService(ServiceWithResult):
 
     def update_comment(self):
         comment = self.comment()
-        if self.cleaned_data.get('text'):
-            comment.text = self.cleaned_data['text']
+        if self.cleaned_data.get("text"):
+            comment.text = self.cleaned_data["text"]
         comment.save()
         return comment
 
     def comment(self):
-        return Comment.objects.get(id=self.cleaned_data['id'])
+        return Comment.objects.get(id=self.cleaned_data["id"])
 
     def user(self):
-        return self.cleaned_data.get('current_user')
+        return self.cleaned_data.get("current_user")
 
     def validate_user(self):
         if not self.user() or self.comment().user != self.user():
-            self.add_error('user', PermissionDenied(f'You do not have permission'))
+            self.add_error("user", PermissionDenied(f"You do not have permission"))
             self.response_status = status.HTTP_404_NOT_FOUND

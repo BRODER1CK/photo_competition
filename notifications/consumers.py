@@ -4,7 +4,7 @@ from channels.generic.websocket import WebsocketConsumer
 
 class NotificationsConsumer(WebsocketConsumer):
     def connect(self):
-        user_id = self.scope['url_route']['kwargs']['user_id']
+        user_id = self.scope["url_route"]["kwargs"]["user_id"]
 
         self.room_group_name = f"user_{user_id}"
 
@@ -20,5 +20,5 @@ class NotificationsConsumer(WebsocketConsumer):
         )
 
     def receive(self, event):
-        message = event['message']
+        message = event["message"]
         self.send(text_data=message)

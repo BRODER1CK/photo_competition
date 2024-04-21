@@ -20,19 +20,19 @@ class UserUpdateService(ServiceWithResult):
 
     def update_user(self):
         user = self.user()
-        if self.cleaned_data.get('first_name'):
-            user.first_name = self.cleaned_data['first_name']
-        if self.cleaned_data.get('last_name'):
-            user.last_name = self.cleaned_data['last_name']
+        if self.cleaned_data.get("first_name"):
+            user.first_name = self.cleaned_data["first_name"]
+        if self.cleaned_data.get("last_name"):
+            user.last_name = self.cleaned_data["last_name"]
         user.save()
         return user
 
     def user(self):
-        return self.cleaned_data.get('current_user')
+        return self.cleaned_data.get("current_user")
 
     def validate_user(self):
         if not self.user():
-            self.add_error('user', PermissionDenied(f'You must be logged in'))
+            self.add_error("user", PermissionDenied(f"You must be logged in"))
             self.response_status = status.HTTP_404_NOT_FOUND
 
 

@@ -19,12 +19,14 @@ class LikeDeleteService(ServiceWithResult):
     def unlike(self):
         like = Like.objects.filter(user=self.user(), photo=self.photo())
         like.delete()
-        send_notification(self.user().id,
-                          f'Пользователь {self.user()} снял голос с Вашей фотографии. Количество голосов: {self.photo().like_count}')
+        send_notification(
+            self.user().id,
+            f"Пользователь {self.user()} снял голос с Вашей фотографии. Количество голосов: {self.photo().like_count}",
+        )
         return Like.objects.none()
 
     def user(self):
-        return self.cleaned_data.get('current_user')
+        return self.cleaned_data.get("current_user")
 
     def photo(self):
-        return Photo.objects.get(id=self.cleaned_data['photo_id'])
+        return Photo.objects.get(id=self.cleaned_data["photo_id"])

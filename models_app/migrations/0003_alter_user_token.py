@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('models_app', '0002_alter_user_token'),
+        ("models_app", "0002_alter_user_token"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='token',
-            field=models.CharField(default='bb1a79bf7a73cec584d3bc666019b707', max_length=255, verbose_name='Токен'),
+            model_name="user",
+            name="token",
+            field=models.CharField(
+                default="bb1a79bf7a73cec584d3bc666019b707",
+                max_length=255,
+                verbose_name="Токен",
+            ),
         ),
     ]

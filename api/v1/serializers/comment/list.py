@@ -16,9 +16,10 @@ class ListCommentSerializer(serializers.ModelSerializer):
 
     def get_comments(self, comment):
         serializer = self.__class__(
-            comment.comments.select_related('user', 'content_type'), many=True)
+            comment.comments.select_related("user", "content_type"), many=True
+        )
         return serializer.data
 
     class Meta:
         model = Comment
-        fields = ['id', 'content_type', 'object_id', 'user', 'text', 'comments']
+        fields = ["id", "content_type", "object_id", "user", "text", "comments"]

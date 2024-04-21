@@ -25,6 +25,9 @@ redis = "*"
 channels = "*"
 daphne = "*"
 channels-redis = "*"
+gunicorn = "*"
+
+[dev-packages]
 pre-commit = "*"
 autoflake = "*"
 pyupgrade = "*"
@@ -35,8 +38,6 @@ pre-commit-hooks = "*"
 black = "*"
 mypy = "*"
 isort = "*"
-
-[dev-packages]
 
 [requires]
 python_version = "3.12"

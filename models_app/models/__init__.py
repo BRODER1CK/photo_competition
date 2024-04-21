@@ -1,1 +1,1 @@
-from . import photo, user, like, comment
+from . import comment, like, photo, user

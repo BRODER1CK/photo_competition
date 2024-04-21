@@ -3,7 +3,8 @@ from drf_yasg import openapi
 from api.v1.serializers.photo.create import CreatePhotoSerializer
 from api.v1.serializers.photo.list import ListPhotoSerializer
 from api.v1.serializers.photo.show import ShowPhotoSerializer
-from api.v1.serializers.photo.update import UpdatePhotoSerializer, PartialUpdatePhotoSerializer
+from api.v1.serializers.photo.update import (PartialUpdatePhotoSerializer,
+                                             UpdatePhotoSerializer)
 
 CREATE_PHOTO_DOC = {
     "tags": ["photo"],
@@ -33,7 +34,7 @@ SHOW_PHOTO_DOC = {
     "tags": ["photo"],
     "operation_id": "Photo show",
     "operation_description": "Show photo",
-    "responses": {200: openapi.Response("Success", ShowPhotoSerializer)}
+    "responses": {200: openapi.Response("Success", ShowPhotoSerializer)},
 }
 
 LIST_PHOTO_DOC = {
@@ -58,15 +59,15 @@ LIST_PHOTO_DOC = {
             in_=openapi.IN_QUERY,
             description="Ordering",
             type=openapi.TYPE_STRING,
-            enum=['like_count', 'updated_at', 'comment_count'],
+            enum=["like_count", "updated_at", "comment_count"],
         ),
         openapi.Parameter(
-                    name="ordering_direction",
-                    in_=openapi.IN_QUERY,
-                    description="Ordering direction",
-                    type=openapi.TYPE_STRING,
-                    enum=['asc', 'desc'],
-                ),
+            name="ordering_direction",
+            in_=openapi.IN_QUERY,
+            description="Ordering direction",
+            type=openapi.TYPE_STRING,
+            enum=["asc", "desc"],
+        ),
         openapi.Parameter(
             name="profile_photos",
             in_=openapi.IN_QUERY,
@@ -78,7 +79,7 @@ LIST_PHOTO_DOC = {
             in_=openapi.IN_QUERY,
             description="Filtering",
             type=openapi.TYPE_STRING,
-            enum=['M', 'P', 'D'],
+            enum=["M", "P", "D"],
         ),
         openapi.Parameter(
             name="search",
@@ -94,5 +95,5 @@ DELETE_PHOTO_DOC = {
     "tags": ["photo"],
     "operation_id": "Photo delete",
     "operation_description": "Delete photo",
-    "responses": {200: openapi.Response("Success", ListPhotoSerializer)}
+    "responses": {200: openapi.Response("Success", ListPhotoSerializer)},
 }

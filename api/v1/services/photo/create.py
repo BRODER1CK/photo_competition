@@ -18,7 +18,8 @@ class PhotoCreateService(ServiceWithResult):
 
     def create_photo(self):
         return Photo.objects.create(
-            title=self.cleaned_data['title'],
-            description=self.cleaned_data.get('description'),
-            current_photo=self.cleaned_data['current_photo'],
-            user=self.cleaned_data['current_user'])
+            title=self.cleaned_data["title"],
+            description=self.cleaned_data.get("description"),
+            current_photo=self.cleaned_data["current_photo"],
+            user=self.cleaned_data["current_user"],
+        )

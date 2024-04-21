@@ -4,7 +4,7 @@ from models_app.models.photo import Photo
 
 
 class ShowPhotoSerializer(serializers.ModelSerializer):
-    author = serializers.CharField(source='user.username')
+    author = serializers.CharField(source="user.username")
     publication_date = serializers.SerializerMethodField()
 
     def get_publication_date(self, obj):
@@ -15,4 +15,14 @@ class ShowPhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
-        fields = ['id', 'status', 'current_photo', 'like_count', 'comment_count', 'author', 'title', 'publication_date', 'description']
+        fields = [
+            "id",
+            "status",
+            "current_photo",
+            "like_count",
+            "comment_count",
+            "author",
+            "title",
+            "publication_date",
+            "description",
+        ]

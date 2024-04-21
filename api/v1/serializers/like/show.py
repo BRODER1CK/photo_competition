@@ -11,4 +11,4 @@ class ShowLikeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Like
-        fields = ['user', 'photo_id', 'id']
+        fields = ["user", "photo_id", "id"]

@@ -12,4 +12,4 @@ class CommentShowService(ServiceWithResult):
         return self
 
     def comment(self):
-        return Comment.objects.get(id=self.cleaned_data['id'])
+        return Comment.objects.get(id=self.cleaned_data["id"])

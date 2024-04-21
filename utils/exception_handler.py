@@ -1,14 +1,12 @@
 import sys
 import traceback
 
-from django.core.exceptions import MultipleObjectsReturned
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.http import Http404
 from rest_framework import exceptions as drf_exceptions
 from rest_framework.response import Response
 from service_objects import errors as exceptions
-from service_objects.errors import InvalidInputsError
-from service_objects.errors import ServiceObjectLogicError
+from service_objects.errors import InvalidInputsError, ServiceObjectLogicError
 
 
 def custom_exception_handler(exception):
