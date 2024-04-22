@@ -25,6 +25,7 @@ redis = "*"
 channels = "*"
 daphne = "*"
 channels-redis = "*"
+gunicorn = "*"
 
 [dev-packages]
 pre-commit = "*"
@@ -40,4 +41,4 @@ isort = "*"
 
 [requires]
 python_version = "3.12"
-python_full_version = "3.12.0"
+python_full_version = "3.12.2"
