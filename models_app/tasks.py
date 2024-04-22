@@ -19,11 +19,11 @@ def delete_photo(photo_id):
 
 @shared_task
 def delete_photos_at_3_am():
-    for photo in Photo.objects.all():
+    for photo in Photo.objects.filter(status="D"):
         redis_key = f"celery_delete_task_{photo.id}"
         task = app.backend.get(redis_key)
         task_dict = pickle.loads(task)
         task_time = task_dict.get("task_time")
         current_time = datetime.now()
-        if photo.status == "D" and current_time > task_time:
+        if current_time > task_time:
             photo.delete()

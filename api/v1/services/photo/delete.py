@@ -1,6 +1,7 @@
 import datetime
 import pickle
 
+from decouple import config
 from django import forms
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
@@ -33,9 +34,12 @@ class PhotoDeleteService(ServiceWithResult):
         photo.status = "D"
         photo.save()
         current_time = datetime.datetime.now()
-        task = delete_photo.apply_async((photo.id,), countdown=86400)
+        photo_delete_delay = config(
+            "PHOTO_DELETE_TIME_SECONDS", default=86400, cast=int
+        )
+        task = delete_photo.apply_async((photo.id,), countdown=photo_delete_delay)
         task_id = f"celery_delete_task_{photo.id}"
-        task_time = current_time + datetime.timedelta(hours=24)
+        task_time = current_time + datetime.timedelta(seconds=photo_delete_delay)
         task_dict = {"task_id": task.id, "task_time": task_time}
         app.backend.set(task_id, pickle.dumps(task_dict))
         if photo.comments:
