@@ -25,7 +25,6 @@ redis = "*"
 channels = "*"
 daphne = "*"
 channels-redis = "*"
-gunicorn = "*"
 
 [dev-packages]
 pre-commit = "*"

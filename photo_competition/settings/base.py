@@ -95,10 +95,10 @@ WSGI_APPLICATION = "photo_competition.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB"),
-        "USER": config("POSTGRES_USER"),
-        "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": "localhost",
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
         "PORT": config("DB_PORT"),
     }
 }
@@ -139,13 +139,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-# STATICFILES_DIRS = [
-#     BASE_DIR / "static",
-# ]
 STATIC_ROOT = BASE_DIR / "static/"
 
-MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

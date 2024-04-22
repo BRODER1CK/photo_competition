@@ -1,3 +1,6 @@
+import datetime
+import pickle
+
 from django import forms
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
@@ -29,9 +32,12 @@ class PhotoDeleteService(ServiceWithResult):
         photo = self.photo()
         photo.status = "D"
         photo.save()
-        redis_key = f"celery_delete_task_{photo.id}"
-        result = delete_photo.apply_async((photo.id,), countdown=86400)
-        app.backend.set(redis_key, result.id)
+        current_time = datetime.datetime.now()
+        task = delete_photo.apply_async((photo.id,), countdown=86400)
+        task_id = f"celery_delete_task_{photo.id}"
+        task_time = current_time + datetime.timedelta(hours=24)
+        task_dict = {"task_id": task.id, "task_time": task_time}
+        app.backend.set(task_id, pickle.dumps(task_dict))
         if photo.comments:
             self.process_comments(photo.comments)
         return photo
@@ -41,8 +47,10 @@ class PhotoDeleteService(ServiceWithResult):
         photo.status = "M"
         photo.save()
         redis_key = f"celery_delete_task_{photo.id}"
-        task_id = app.backend.get(redis_key)
-        app.control.revoke(task_id.decode("utf-8"), terminate=True)
+        task = app.backend.get(redis_key)
+        task_dict = pickle.loads(task)
+        task_id = task_dict.get("task_id")
+        app.control.revoke(task_id, terminate=True)
         return photo
 
     def process_comments(self, comments):
