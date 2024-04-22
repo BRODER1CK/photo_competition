@@ -43,7 +43,7 @@ class PhotoUpdateService(ServiceWithResult):
 
     def validate_user(self):
         if not self.user() or self.photo().user != self.user():
-            self.add_error("user", PermissionDenied(f"You do not have permission"))
+            self.add_error("user", PermissionDenied("You do not have permission"))
             self.response_status = status.HTTP_404_NOT_FOUND
 
 

@@ -6,17 +6,21 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from service_objects.services import ServiceOutcome
 
-from api.v1.docs.photo import (CREATE_PHOTO_DOC, DELETE_PHOTO_DOC,
-                               LIST_PHOTO_DOC, PARTIAL_UPDATE_PHOTO_DOC,
-                               SHOW_PHOTO_DOC, UPDATE_PHOTO_DOC)
+from api.v1.docs.photo import (
+    CREATE_PHOTO_DOC,
+    DELETE_PHOTO_DOC,
+    LIST_PHOTO_DOC,
+    PARTIAL_UPDATE_PHOTO_DOC,
+    SHOW_PHOTO_DOC,
+    UPDATE_PHOTO_DOC,
+)
 from api.v1.permissions.has_token_or_read_only import HasTokenOrReadOnly
 from api.v1.serializers.photo.show import ShowPhotoSerializer
 from api.v1.services.photo.create import PhotoCreateService
 from api.v1.services.photo.delete import PhotoDeleteService
 from api.v1.services.photo.list import PhotoListService
 from api.v1.services.photo.show import PhotoShowService
-from api.v1.services.photo.update import (PhotoPartialUpdateService,
-                                          PhotoUpdateService)
+from api.v1.services.photo.update import PhotoPartialUpdateService, PhotoUpdateService
 from utils.pagination import CustomPagination
 
 

@@ -25,7 +25,8 @@ class LikeCreateService(ServiceWithResult):
         like = Like.objects.create(user=self.user(), photo=self.photo())
         send_notification(
             self.user().id,
-            f"Пользователь {self.user()} проголосовал за Вашу фотографию. Количество голосов: {self.photo().like_count}",
+            f"Пользователь {self.user()} проголосовал за Вашу фотографию. "
+            f"Количество голосов: {self.photo().like_count}",
         )
         return like
 
@@ -37,5 +38,5 @@ class LikeCreateService(ServiceWithResult):
 
     def validate_like(self):
         if Like.objects.filter(user=self.user(), photo=self.photo()):
-            self.add_error("like", ValidationError(f"Like already exists"))
+            self.add_error("like", ValidationError("Like already exists"))
             self.response_status = status.HTTP_400_BAD_REQUEST

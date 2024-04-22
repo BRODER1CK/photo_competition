@@ -1,5 +1,5 @@
 import datetime
-import pickle
+import json
 
 from decouple import config
 from django import forms
@@ -40,8 +40,11 @@ class PhotoDeleteService(ServiceWithResult):
         task = delete_photo.apply_async((photo.id,), countdown=photo_delete_delay)
         task_id = f"celery_delete_task_{photo.id}"
         task_time = current_time + datetime.timedelta(seconds=photo_delete_delay)
-        task_dict = {"task_id": task.id, "task_time": task_time}
-        app.backend.set(task_id, pickle.dumps(task_dict))
+        task_dict = {
+            "task_id": task.id,
+            "task_time": task_time.strftime("%d/%m/%Y_%H:%M:%S"),
+        }
+        app.backend.set(task_id, json.dumps(task_dict))
         if photo.comments:
             self.process_comments(photo.comments)
         return photo
@@ -52,7 +55,7 @@ class PhotoDeleteService(ServiceWithResult):
         photo.save()
         redis_key = f"celery_delete_task_{photo.id}"
         task = app.backend.get(redis_key)
-        task_dict = pickle.loads(task)
+        task_dict = json.loads(task)
         task_id = task_dict.get("task_id")
         app.control.revoke(task_id, terminate=True)
         return photo
@@ -75,5 +78,5 @@ class PhotoDeleteService(ServiceWithResult):
 
     def validate_user(self):
         if not self.user() or self.photo().user != self.user():
-            self.add_error("user", PermissionDenied(f"You do not have permission"))
+            self.add_error("user", PermissionDenied("You do not have permission"))
             self.response_status = status.HTTP_404_NOT_FOUND

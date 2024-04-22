@@ -32,7 +32,7 @@ class UserUpdateService(ServiceWithResult):
 
     def validate_user(self):
         if not self.user():
-            self.add_error("user", PermissionDenied(f"You must be logged in"))
+            self.add_error("user", PermissionDenied("You must be logged in"))
             self.response_status = status.HTTP_404_NOT_FOUND
 
 

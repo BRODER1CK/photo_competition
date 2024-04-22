@@ -29,7 +29,8 @@ class CommentDeleteService(ServiceWithResult):
         parent.refresh_from_db()
         send_notification(
             self.user().id,
-            f"Пользователь {self.user()} удалил комментарий к Вашей фотографии. Количество комментариев: {parent.comment_count}",
+            f"Пользователь {self.user()} удалил комментарий к Вашей фотографии. "
+            f"Количество комментариев: {parent.comment_count}",
         )
         return Comment.objects.none()
 
@@ -41,7 +42,7 @@ class CommentDeleteService(ServiceWithResult):
 
     def validate_user(self):
         if not self.user() or self.comment().user != self.user():
-            self.add_error("user", PermissionDenied(f"You do not have permission"))
+            self.add_error("user", PermissionDenied("You do not have permission"))
             self.response_status = status.HTTP_403_FORBIDDEN
 
     def validate_comments(self):
@@ -49,7 +50,7 @@ class CommentDeleteService(ServiceWithResult):
             self.add_error(
                 "user",
                 BadRequest(
-                    f"You can not delete a comment, there are others underneath it"
+                    "You can not delete a comment, there are others underneath it"
                 ),
             )
             self.response_status = status.HTTP_400_BAD_REQUEST

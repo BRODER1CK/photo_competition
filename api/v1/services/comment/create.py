@@ -42,7 +42,8 @@ class CommentCreateService(ServiceWithResult):
         parent.refresh_from_db()
         send_notification(
             self.user().id,
-            f"Пользователь {self.user()} оставил комментарий к Вашей фотографии. Количество комментариев: {parent.comment_count}",
+            f"Пользователь {self.user()} оставил комментарий к Вашей фотографии. "
+            f"Количество комментариев: {parent.comment_count}",
         )
         return comment
 
@@ -57,7 +58,7 @@ class CommentCreateService(ServiceWithResult):
             self.add_error(
                 "user",
                 BadRequest(
-                    f"You can not create a comment on a comment that does not exist"
+                    "You can not create a comment on a comment that does not exist"
                 ),
             )
             self.response_status = status.HTTP_400_BAD_REQUEST
@@ -68,7 +69,7 @@ class CommentCreateService(ServiceWithResult):
             self.add_error(
                 "user",
                 BadRequest(
-                    f"You can not create a comment on a photo that does not exist"
+                    "You can not create a comment on a photo that does not exist"
                 ),
             )
             self.response_status = status.HTTP_400_BAD_REQUEST

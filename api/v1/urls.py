@@ -2,8 +2,7 @@ from django.urls import path
 
 from api.v1.views.comment import ListCreateCommentView, UpdateDeleteCommentView
 from api.v1.views.like import CreateDeleteLikeView, ListLikeView
-from api.v1.views.photo import (ListCreatePhotoView,
-                                RetrieveUpdateDeletePhotoView)
+from api.v1.views.photo import ListCreatePhotoView, RetrieveUpdateDeletePhotoView
 from api.v1.views.user import GenerateTokenView, RetrieveUpdateUserView
 
 urlpatterns = [

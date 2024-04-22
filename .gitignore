@@ -153,3 +153,5 @@ cython_debug/
 /utils/query_debugger.py
 
 media/
+
+dump.rdb

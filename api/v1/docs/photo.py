@@ -3,8 +3,10 @@ from drf_yasg import openapi
 from api.v1.serializers.photo.create import CreatePhotoSerializer
 from api.v1.serializers.photo.list import ListPhotoSerializer
 from api.v1.serializers.photo.show import ShowPhotoSerializer
-from api.v1.serializers.photo.update import (PartialUpdatePhotoSerializer,
-                                             UpdatePhotoSerializer)
+from api.v1.serializers.photo.update import (
+    PartialUpdatePhotoSerializer,
+    UpdatePhotoSerializer,
+)
 
 CREATE_PHOTO_DOC = {
     "tags": ["photo"],

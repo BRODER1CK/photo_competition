@@ -31,12 +31,20 @@ repos:
          entry: flake8
          language: system
          types: [python]
+         args: [--max-line-length=120]
+         exclude: |
+             (?x)(
+                 ^models_app/models/__init__.py
+             )
 
     -   id: bandit
         name: bandit
         entry: bandit
         language: system
         types: [python]
+        args:
+            - -s
+            - B308,B703
 
     -   id: black
         name: black
@@ -49,9 +57,11 @@ repos:
         entry: mypy
         language: system
         types: [python]
+        args: [ "--ignore-missing-imports", "--scripts-are-modules" ]
 
     -   id: isort
         name: isort
         entry: isort
         language: system
         types: [python]
+        args: ["--profile", "black"]

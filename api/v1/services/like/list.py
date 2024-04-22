@@ -2,7 +2,6 @@ from django import forms
 from service_objects.services import ServiceWithResult
 
 from models_app.models.like import Like
-from models_app.models.photo import Photo
 
 
 class LikeListService(ServiceWithResult):

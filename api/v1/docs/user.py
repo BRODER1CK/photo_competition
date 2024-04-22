@@ -2,8 +2,10 @@ from drf_yasg import openapi
 
 from api.v1.serializers.user.generate_token import GenerateTokenSerializer
 from api.v1.serializers.user.show import UserSerializer
-from api.v1.serializers.user.update import (PartialUpdateUserSerializer,
-                                            UpdateUserSerializer)
+from api.v1.serializers.user.update import (
+    PartialUpdateUserSerializer,
+    UpdateUserSerializer,
+)
 
 UPDATE_USER_DOC = {
     "tags": ["user"],

@@ -4,9 +4,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from service_objects.services import ServiceOutcome
 
-from api.v1.docs.comment import (CREATE_COMMENT_DOC, DELETE_COMMENT_DOC,
-                                 LIST_COMMENT_DOC, SHOW_COMMENT_DOC,
-                                 UPDATE_COMMENT_DOC)
+from api.v1.docs.comment import (
+    CREATE_COMMENT_DOC,
+    DELETE_COMMENT_DOC,
+    LIST_COMMENT_DOC,
+    SHOW_COMMENT_DOC,
+    UPDATE_COMMENT_DOC,
+)
 from api.v1.permissions.has_token_or_read_only import HasTokenOrReadOnly
 from api.v1.serializers.comment.list import ListCommentSerializer
 from api.v1.serializers.comment.show import ShowCommentSerializer
