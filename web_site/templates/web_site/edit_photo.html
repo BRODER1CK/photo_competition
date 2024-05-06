@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<input type="hidden" id="photoId" value="{{ photo.id }}">
 <title>{{ title }}</title>
 <div class="container mt-5">
     <h1 class="mb-4">Изменение фотографии</h1>
@@ -27,13 +26,11 @@
     async function editPhoto() {
         const csrftoken = getCookie('csrftoken');
 
-        const photoId = document.getElementById("photoId").value;
-
         const photoForm = document.getElementById("photoForm");
 
         const formData = new FormData(photoForm);
 
-        const photo = await axios.patch(`http://127.0.0.1:8000/api/v1/photos/${photoId}/`, formData, {'headers': {
+        const photo = await axios.patch('{{ schema }}://{{ domain }}/api/v1/photos/{{ photo.id }}/', formData, {'headers': {
         'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
 
         window.location.replace("{% url 'web_site:profile' %}");

@@ -55,7 +55,7 @@ function validateForm() {
 
         const formData = new FormData(photoForm);
 
-        const photos = await axios.post(`http://127.0.0.1:8000/api/v1/photos/`, formData, {'headers': {
+        const photos = await axios.post('{{ schema }}://{{ domain }}/api/v1/photos/', formData, {'headers': {
         'Authorization': '{{ user.token }}', 'X-CSRFToken': csrftoken}});
 
         window.location.replace("{% url 'web_site:profile' %}");

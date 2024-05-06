@@ -143,6 +143,8 @@
     </nav>
     {% endblock %}
     <input type="hidden" id="user" value="{{ user }}">
+    <input type="hidden" id="schema" value="{{ schema }}">
+    <input type="hidden" id="domain" value="{{ domain }}">
     {% block content %}
     {% endblock %}
     {% block navigation %}
@@ -158,9 +160,13 @@
 
     const csrftoken = getCookie('csrftoken');
 
-    const profile = await axios.get('http://127.0.0.1:8000/api/v1/profile/');
+    const schema = document.getElementById('schema').value;
 
-    const photo = await axios.delete(`http://127.0.0.1:8000/api/v1/photos/${id}/`,
+    const domain = document.getElementById('domain').value;
+
+    const profile = await axios.get('{{ schema }}://{{ domain }}/api/v1/profile/');
+
+    const photo = await axios.delete(`${schema}://${domain}/api/v1/photos/${id}/`,
     {'headers': { 'Authorization': profile.data.token, 'X-CSRFToken': csrftoken}});
 
     const buttonDiv = document.getElementById(`deletePhoto_${id}`);
@@ -203,10 +209,18 @@ function getCookie(name) {
 <script>
 const user_id = '{{ user.id }}';
 
+const schema = document.getElementById('schema').value;
+
+const domain = document.getElementById('domain').value;
+
 if (user_id != 'None') {
-  const ws = new WebSocket(`ws://localhost:8000/ws/notifications/${user_id}/`);
+   if (schema == 'http') {
+     var ws = new WebSocket(`ws://${domain}/ws/notifications/${user_id}/`);
+   } else if (schema == 'https') {
+     var ws = new WebSocket(`wss://${domain}/ws/notifications/${user_id}/`);
+   };
   ws.onmessage = function(event) {
-  alert(event.data);
+    alert(event.data);
   };
 };
 </script>

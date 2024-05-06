@@ -191,9 +191,9 @@ async function profilePhotos(data) {
 
         const tokenDiv = document.getElementById("tokenContainer");
 
-        const profile = await axios.get('http://127.0.0.1:8000/api/v1/profile/');
+        const profile = await axios.get('{{ schema }}://{{ domain }}/api/v1/profile/');
 
-        const newToken = await axios.post('http://127.0.0.1:8000/api/v1/profile/generate_token/', {},
+        const newToken = await axios.post('{{ schema }}://{{ domain }}/api/v1/profile/generate_token/', {},
         {'headers': {'Authorization': profile.data.token, 'accept': 'application/json; charset=UTF-8', 'X-CSRFToken': csrftoken}});
 
         tokenDiv.innerHTML = newToken.data.token;
@@ -206,7 +206,9 @@ const perPage = 3;
 
 async function getProfilePhotos(showPhotosFunc) {
   const filtering = document.querySelector('input[name="flexRadioDefault"]:checked').value;
-  const response = await axios.get(`http://127.0.0.1:8000/api/v1/photos/?page=${currentPage}&per_page=${perPage}`,
+  const schema = document.getElementById('schema').value;
+  const domain = document.getElementById('domain').value;
+  const response = await axios.get(`${schema}://${domain}/api/v1/photos/?page=${currentPage}&per_page=${perPage}`,
   {params: {'profile_photos': true, 'filtering': filtering}});
   const data = response.data.results;
   const pagination = response.data.pagination;

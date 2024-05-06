@@ -1,3 +1,4 @@
+from decouple import config
 from django.shortcuts import render
 from django.views import View
 
@@ -8,5 +9,12 @@ class EditPhoto(View):
     def get(self, request, id):
         photo = RetrieveUpdateDeletePhotoView().get(request, id=id).data
         return render(
-            request, "web_site/edit_photo.html", {"user": request.user, "photo": photo}
+            request,
+            "web_site/edit_photo.html",
+            {
+                "user": request.user,
+                "photo": photo,
+                "schema": config("SCHEMA"),
+                "domain": config("DOMAIN"),
+            },
         )
