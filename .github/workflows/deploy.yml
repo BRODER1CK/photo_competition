@@ -19,9 +19,9 @@ jobs:
             cd /var/www/photo_competition
             git pull
             pipenv install
-            pipenv run python manage.py collectstatic --noinput
-            pipenv run python manage.py migrate
             sudo systemctl restart nginx
             sudo systemctl restart gunicorn.service
             sudo systemctl restart daphne.service
             sudo systemctl restart celery.service
+            pipenv run python manage.py collectstatic --noinput
+            pipenv run python manage.py migrate
