@@ -1,0 +1,27 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:     
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /var/www/photo_competition
+            git pull
+            pipenv install
+            pipenv run python manage.py collectstatic --noinput
+            pipenv run python manage.py migrate
+            sudo systemctl restart nginx
+            sudo systemctl restart gunicorn.service
+            sudo systemctl restart daphne.service
+            sudo systemctl restart celery.service
