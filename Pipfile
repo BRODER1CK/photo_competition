@@ -26,6 +26,7 @@ channels = "*"
 daphne = "*"
 channels-redis = "*"
 gunicorn = "*"
+factory-boy = "*"
 
 [dev-packages]
 pre-commit = "*"

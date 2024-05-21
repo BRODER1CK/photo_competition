@@ -44,7 +44,7 @@ repos:
         types: [python]
         args:
             - -s
-            - B308,B703
+            - B308,B703,B101
 
     -   id: black
         name: black

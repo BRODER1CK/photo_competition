@@ -215,9 +215,9 @@ const domain = document.getElementById('domain').value;
 
 if (user_id != 'None') {
    if (schema == 'http') {
-     var ws = new WebSocket(`ws://${domain}/ws/notifications/${user_id}/`);
+     var ws = new WebSocket(`ws://${domain}:8000/ws/notifications/${user_id}/`);
    } else if (schema == 'https') {
-     var ws = new WebSocket(`wss://${domain}/ws/notifications/${user_id}/`);
+     var ws = new WebSocket(`wss://${domain}:8001/ws/notifications/${user_id}/`);
    };
   ws.onmessage = function(event) {
     alert(event.data);
