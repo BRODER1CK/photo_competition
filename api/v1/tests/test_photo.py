@@ -11,7 +11,7 @@ class PhotoTestCase(TestCase):
         cls.user = UserFactory()
 
     def test_view_list_status_200(self):
-        resp = self.client.get(f"/api/v1/photos/")
+        resp = self.client.get("/api/v1/photos/")
         self.assertEqual(resp.status_code, 200)
 
     def test_view_show_status_301(self):
