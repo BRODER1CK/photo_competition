@@ -18,8 +18,8 @@ jobs:
           script: |
             cd /var/www/photo_competition
             git pull
-            pipenv shell
             pipenv install
+            pipenv shell
             python manage.py collectstatic
             python manage.py migrate
             sudo systemctl restart nginx
