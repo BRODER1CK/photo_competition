@@ -1,12 +1,28 @@
 name: Deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: |
-          ssh server-alias 
-          /var/www/photo_competition/deploy.sh
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd /var/www/photo_competition
+            git pull
+            pipenv shell
+            pipenv install
+            python manage.py collectstatic
+            python manage.py migrate
+            sudo systemctl restart nginx
+            sudo systemctl restart gunicorn.service
+            sudo systemctl restart daphne.service
+            celery -A photo_competition worker -l info --beat &
