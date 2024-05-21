@@ -9,6 +9,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pipenv
+        run: |
+          pip install pipenv
+          
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -16,10 +25,11 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd /var/www/photo_competition
             git pull
             pipenv shell
             pipenv install
+            python manage.py collectstatic
+            python manage.py migrate
             sudo systemctl restart nginx
             sudo systemctl restart gunicorn.service
             sudo systemctl restart daphne.service
