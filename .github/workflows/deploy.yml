@@ -18,11 +18,10 @@ jobs:
           script: |
             cd /var/www/photo_competition
             git pull
-            pipenv run
             pipenv install
-            python manage.py collectstatic
-            python manage.py migrate
+            pipenv run python manage.py collectstatic
+            pipenv run python manage.py migrate
             sudo systemctl restart nginx
             sudo systemctl restart gunicorn.service
             sudo systemctl restart daphne.service
-            celery -A photo_competition worker -l info --beat &
+            pipenv run celery -A photo_competition worker -l info --beat &
