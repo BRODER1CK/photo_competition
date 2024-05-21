@@ -18,8 +18,8 @@ jobs:
           script: |
             cd /var/www/photo_competition
             git pull
-            pipenv install
             pipenv shell
+            pipenv install
             sudo systemctl restart nginx
             sudo systemctl restart gunicorn.service
             sudo systemctl restart daphne.service
