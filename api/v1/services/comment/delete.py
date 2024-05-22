@@ -28,7 +28,7 @@ class CommentDeleteService(ServiceWithResult):
         comment.delete()
         parent.refresh_from_db()
         send_notification(
-            self.user().id,
+            parent.user.id,
             f"Пользователь {self.user()} удалил комментарий к Вашей фотографии. "
             f"Количество комментариев: {parent.comment_count}",
         )

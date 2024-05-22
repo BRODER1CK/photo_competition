@@ -24,7 +24,7 @@ class LikeCreateService(ServiceWithResult):
     def like(self):
         like = Like.objects.create(user=self.user(), photo=self.photo())
         send_notification(
-            self.user().id,
+            self.photo().user.id,
             f"Пользователь {self.user()} проголосовал за Вашу фотографию. "
             f"Количество голосов: {self.photo().like_count}",
         )

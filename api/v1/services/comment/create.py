@@ -41,7 +41,7 @@ class CommentCreateService(ServiceWithResult):
             parent = parent.content_object
         parent.refresh_from_db()
         send_notification(
-            self.user().id,
+            parent.user.id,
             f"Пользователь {self.user()} оставил комментарий к Вашей фотографии. "
             f"Количество комментариев: {parent.comment_count}",
         )

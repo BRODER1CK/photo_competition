@@ -20,7 +20,7 @@ class LikeDeleteService(ServiceWithResult):
         like = Like.objects.filter(user=self.user(), photo=self.photo())
         like.delete()
         send_notification(
-            self.user().id,
+            self.photo().user.id,
             f"Пользователь {self.user()} снял голос с Вашей фотографии. Количество голосов: {self.photo().like_count}",
         )
         return Like.objects.none()
