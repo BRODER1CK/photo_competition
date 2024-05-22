@@ -1,3 +1,5 @@
+from decouple import config
+
 REST_FRAMEWORK = {
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
@@ -13,8 +15,8 @@ REST_FRAMEWORK = {
 }
 
 SWAGGER_SETTINGS = {
-    "LOGIN_URL": "http://127.0.0.1:8000/social-auth/login/vk-oauth2/",
-    "LOGOUT_URL": "http://127.0.0.1:8000/logout/",
+    "LOGIN_URL": f'{config("SCHEMA")}://{config("DOMAIN")}/social-auth/login/vk-oauth2/',
+    "LOGOUT_URL": f'{config("SCHEMA")}://{config("DOMAIN")}/logout/',
     "SECURITY_DEFINITIONS": {
         "Token": {"type": "apiKey", "name": "Authorization", "in": "header"}
     },

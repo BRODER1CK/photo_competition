@@ -72,7 +72,7 @@
                 <br>
                 `;
 
-                const likesList = await axios.get('http://127.0.0.1:8000/api/v1/likes/', {params: {'photo_id': '{{ photo.id }}'}});
+                const likesList = await axios.get('{{ schema }}://{{ domain }}/api/v1/likes/', {params: {'photo_id': '{{ photo.id }}'}});
 
                 let isLiked = false;
 
