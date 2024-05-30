@@ -23,7 +23,17 @@ jobs:
         envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
         envkey_DEBUG: True
         envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+        envkey_DB_NAME: ${{ secrets.DB_NAME }}
+        envkey_DB_USER: ${{ secrets.DB_USER }}
+        envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         file_name: .env
+    - name: Setup database
+      uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '14'
+        postgresql db: ${{ secrets.DB_NAME }}
+        postgresql user: ${{ secrets.DB_USER }}
+        postgresql password: ${{ secrets.DB_PASSWORD }}
     - name: Test
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
