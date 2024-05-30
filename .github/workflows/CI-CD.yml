@@ -35,11 +35,12 @@ jobs:
         envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
         file_name: .env
     - name: Setup database
-      uses: nyurik/action-setup-postgis@v2
+      uses: ikalnytskyi/action-setup-postgres@v6 
       with:
         username: ${{ secrets.DB_USER }}
         password: ${{ secrets.DB_PASSWORD }}
         database: ${{ secrets.DB_NAME }}
+        host: ${{ secrets.DB_HOST }}
         port: ${{ secrets.DB_PORT }}
     - name: Test
       uses: VaultVulp/action-pipenv@v2.0.1
