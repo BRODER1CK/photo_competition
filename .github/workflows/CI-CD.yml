@@ -26,6 +26,8 @@ jobs:
         envkey_DB_NAME: ${{ secrets.DB_NAME }}
         envkey_DB_USER: ${{ secrets.DB_USER }}
         envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        envkey_DB_HOST: ${{ secrets.DB_HOST }}
+        envkey_DB_PORT: ${{ secrets.DB_PORT }}
         file_name: .env
     - name: Setup database
       uses: harmon758/postgresql-action@v1
