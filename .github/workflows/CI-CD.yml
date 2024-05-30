@@ -10,6 +10,19 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
+    - name: Start PostgreSQL on Ubuntu
+      run: |
+        sudo systemctl start postgresql.service
+        pg_isready
+
+    - name: Create additional user
+      run: |
+        sudo -u postgres psql --command="CREATE USER ${{ secrets.DB_USER }} PASSWORD ${{ secrets.DB_PASSWORD }}" --command="\du"
+
+    - name: Create additional database
+      run: |
+        sudo -u postgres createdb --owner=${{ secrets.DB_USER }} ${{ secrets.DB_NAME }}
+        PGPASSWORD=${{ secrets.DB_PASSWORD }} psql --username=${{ secrets.DB_USER }} --host=localhost --list timetable
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
@@ -35,15 +48,6 @@ jobs:
         envkey_DOMAIN: ${{ secrets.DOMAIN }}
         envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
         file_name: .env
-    - name: Setup database
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '14'
-        postgresql db: ${{ secrets.DB_NAME }}
-        postgresql user: ${{ secrets.DB_USER }}
-        postgresql password: ${{ secrets.DB_PASSWORD }}
-        postgresql host: ${{ secrets.DB_HOST }}
-        postgresql port: ${{ secrets.DB_PORT }}
     - name: Test
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
