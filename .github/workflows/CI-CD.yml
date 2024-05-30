@@ -16,6 +16,8 @@ jobs:
         cache: 'pipenv'
     - name: Install pipenv
       run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+        sudo apt-get update
+        sudo apt-get install gdal-bin libgdal-dev
     - run: pipenv install -d
     - name: Run tests
       run: python manage.py test
