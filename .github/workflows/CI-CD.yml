@@ -1,3 +1,4 @@
+
 name: CI/CD
 
 on:
@@ -26,7 +27,7 @@ jobs:
         envkey_DB_NAME: ${{ secrets.DB_NAME }}
         envkey_DB_USER: ${{ secrets.DB_USER }}
         envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        envkey_DB_HOST: "db"
+        envkey_DB_HOST: ${{ secrets.DB_HOST }}
         envkey_DB_PORT: ${{ secrets.DB_PORT }}
         envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
         envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
@@ -41,6 +42,8 @@ jobs:
         postgresql db: ${{ secrets.DB_NAME }}
         postgresql user: ${{ secrets.DB_USER }}
         postgresql password: ${{ secrets.DB_PASSWORD }}
+        postgresql host: ${{ secrets.DB_HOST }}
+        postgresql port: ${{ secrets.DB_PORT }}
     - name: Test
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
