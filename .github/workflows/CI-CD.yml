@@ -35,17 +35,12 @@ jobs:
         envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
         file_name: .env
     - name: Setup database
-      uses: harmon758/postgresql-action@v1
+      uses: nyurik/action-setup-postgis@v2
       with:
-        postgresql version: '14'
-        postgresql db: ${{ secrets.DB_NAME }}
-        postgresql user: ${{ secrets.DB_USER }}
-        postgresql password: ${{ secrets.DB_PASSWORD }}
-    - name: Start PostgreSQL on Ubuntu
-      run: |
-        sudo systemctl start postgresql
-        sudo systemctl enable postgresql
-        pg_isready
+        username: ${{ secrets.DB_USER }}
+        password: ${{ secrets.DB_PASSWORD }}
+        database: ${{ secrets.DB_NAME }}
+        port: ${{ secrets.DB_PORT }}
     - name: Test
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
