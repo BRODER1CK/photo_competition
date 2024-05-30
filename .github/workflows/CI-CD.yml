@@ -21,7 +21,7 @@ jobs:
       uses: SpicyPizza/create-envfile@v2.0
       with:
         envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        envkey_DEBUG: True
+        envkey_DEBUG: ${{ secrets.DEBUG }}
         envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
         envkey_DB_NAME: ${{ secrets.DB_NAME }}
         envkey_DB_USER: ${{ secrets.DB_USER }}
@@ -30,6 +30,9 @@ jobs:
         envkey_DB_PORT: ${{ secrets.DB_PORT }}
         envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
         envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
+        envkey_SCHEMA: ${{ secrets.SCHEMA }}
+        envkey_DOMAIN: ${{ secrets.DOMAIN }}
+        envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
         file_name: .env
     - name: Setup database
       uses: harmon758/postgresql-action@v1
