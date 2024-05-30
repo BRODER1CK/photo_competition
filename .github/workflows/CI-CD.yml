@@ -17,10 +17,14 @@ jobs:
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
         command: install -d
-    - name: Run tests
-      run: pipenv run python manage.py test
-    - name: Run pre-commit
-      run: pipenv run pre-commit run --all-files
+    - name: Test
+      uses: VaultVulp/action-pipenv@v2.0.1
+      with:
+        command: run test
+    - name: Pre-commit
+      uses: VaultVulp/action-pipenv@v2.0.1
+      with:
+        command: run pre-commit
   deploy:
     needs: tests
     runs-on: ubuntu-latest
