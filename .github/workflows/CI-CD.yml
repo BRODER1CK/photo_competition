@@ -20,8 +20,9 @@ jobs:
     - name: Make envfile
       uses: SpicyPizza/create-envfile@v2.0
       with:
-        envkey_DEBUG: True
         envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        envkey_DEBUG: True
+        envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
         file_name: .env
     - name: Test
       uses: VaultVulp/action-pipenv@v2.0.1
