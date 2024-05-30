@@ -16,6 +16,7 @@ jobs:
         cache: 'pipenv'
     - name: Install pipenv
       run: curl https://raw.githubusercontent.com/pypa/pipenv/main/get-pipenv.py | python
+        sudo apt install python3.12-dev
     - run: pipenv install -d
     - name: Run tests
       run: python manage.py test
