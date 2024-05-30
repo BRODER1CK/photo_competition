@@ -12,11 +12,12 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.12.3'
         cache: 'pipenv'
-    - name: Install pipenv
-      run: curl https://raw.githubusercontent.com/pypa/pipenv/main/get-pipenv.py | python
-    - run: pipenv install -d
+    - name: Install dependencies
+      uses: VaultVulp/action-pipenv@v2.0.1
+      with:
+        command: install -d
     - name: Run tests
       run: python manage.py test
     - name: Run pre-commit
