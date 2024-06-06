@@ -16,6 +16,13 @@ jobs:
           POSTGRES_USER: ${{ secrets.DB_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
           POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:${{ secrets.DB_PORT }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -42,11 +49,6 @@ jobs:
         envkey_DOMAIN: ${{ secrets.DOMAIN }}
         envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
         file_name: .env
-    - name: Start PostgreSQL on Ubuntu
-      run: |
-        sudo systemctl start postgresql
-        sudo systemctl enable postgresql
-        pg_isready
     - name: Test
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
