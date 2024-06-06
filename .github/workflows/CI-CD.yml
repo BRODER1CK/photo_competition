@@ -40,7 +40,7 @@ jobs:
       with:
         command: run pre-commit
   deploy:
-    needs: tests
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to server
