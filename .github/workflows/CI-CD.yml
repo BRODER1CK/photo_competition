@@ -6,19 +6,19 @@ on:
       - main
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-python@master
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.12.3'
     - name: Install dependencies
-      uses: VaultVulp/action-pipenv@master
+      uses: VaultVulp/action-pipenv@v2.0.1
       with:
         command: install -d
     - name: Make envfile
-      uses: SpicyPizza/create-envfile@master
+      uses: SpicyPizza/create-envfile@v2.0
       with:
         envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
         envkey_DEBUG: ${{ secrets.DEBUG }}
@@ -43,19 +43,19 @@ jobs:
         host: ${{ secrets.DB_HOST }}
         port: ${{ secrets.DB_PORT }}
     - name: Test
-      uses: VaultVulp/action-pipenv@master
+      uses: VaultVulp/action-pipenv@v2.0.1
       with:
         command: run test
     - name: Pre-commit
-      uses: VaultVulp/action-pipenv@master
+      uses: VaultVulp/action-pipenv@v2.0.1
       with:
         command: run pre-commit
   deploy:
-    needs: test
+    needs: tests
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
