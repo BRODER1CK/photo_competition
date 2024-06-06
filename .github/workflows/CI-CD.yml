@@ -1,80 +1,39 @@
-name: CI/CD
-on:
-  push:
-    branches:
-      - main
+name: Test Workflow
+
+on: push 
+
 jobs:
-  test:
-    name: Build
-    runs-on: ubuntu-latest
+ test:
+   runs-on: ubuntu-latest
+   
+   services:
+    image: postgres
+    env:
+    - POSTGRES_USER: postgres
+    - POSTGRES_PASSWORD: postgres
+    - POSTGRES_BD: postgres
+    ports:
+    - 5432:5432
+    options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+   
+   steps:
+   - uses: actions/checkout@master
+   - name: Set up Python
+   - uses: actions/setup-python@master
+     with:
+      python-version: 3.12
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
-    steps:
-    - uses: actions/checkout@master
-    
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.12.3'
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v2.0
-      with:
-        envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        envkey_DEBUG: ${{ secrets.DEBUG }}
-        envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-        envkey_DB_NAME: ${{ secrets.DB_NAME }}
-        envkey_DB_USER: ${{ secrets.DB_USER }}
-        envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        envkey_DB_HOST: "db"
-        envkey_DB_PORT: ${{ secrets.DB_PORT }}
-        envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
-        envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
-        envkey_SCHEMA: ${{ secrets.SCHEMA }}
-        envkey_DOMAIN: ${{ secrets.DOMAIN }}
-        envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
-        file_name: .env
-    - name: Install dependencies
-      uses: VaultVulp/action-pipenv@v2.0.1
-      with:
-        command: install -d
-    - name: Test
-      uses: VaultVulp/action-pipenv@v2.0.1
-      env:
+   - name: Install dependencies
+   - uses: VaultVulp/action-pipenv@master
+     with:
+      command: install -d
+   - name: Test
+   - uses: VaultVulp/action-pipenv@master
+     env:
         PG_HOST: postgres
         PG_USER: postgres
         PG_DATABASE: postgres
         PG_PASSWORD: postgres
         PG_PORT: ${{ job.services.postgres.ports['5432'] }}
-      with:
+     with:
         command: run test
-    - name: Pre-commit
-      uses: VaultVulp/action-pipenv@v2.0.1
-      with:
-        command: run pre-commit
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd /var/www/photo_competition
-            git pull
-            pipenv install
-            sudo systemctl restart nginx
-            sudo systemctl restart gunicorn.service
-            sudo systemctl restart daphne.service
-            sudo systemctl restart celery.service
-            pipenv run python manage.py collectstatic --noinput
-            pipenv run python manage.py migrate
