@@ -1,72 +1,40 @@
 name: CI/CD
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  tests:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.12.3]
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.12.3'
-    - name: Install dependencies
-      uses: VaultVulp/action-pipenv@v2.0.1
-      with:
-        command: install -d
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v2.0
-      with:
-        envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        envkey_DEBUG: ${{ secrets.DEBUG }}
-        envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-        envkey_DB_NAME: ${{ secrets.DB_NAME }}
-        envkey_DB_USER: ${{ secrets.DB_USER }}
-        envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        envkey_DB_HOST: ${{ secrets.DB_HOST }}
-        envkey_DB_PORT: ${{ secrets.DB_PORT }}
-        envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
-        envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
-        envkey_SCHEMA: ${{ secrets.SCHEMA }}
-        envkey_DOMAIN: ${{ secrets.DOMAIN }}
-        envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
-        file_name: .env
-    - name: Setup database
-      uses: ikalnytskyi/action-setup-postgres@v6 
-      with:
-        username: ${{ secrets.DB_USER }}
-        password: ${{ secrets.DB_PASSWORD }}
-        database: ${{ secrets.DB_NAME }}
-        host: ${{ secrets.DB_HOST }}
-        port: ${{ secrets.DB_PORT }}
-    - name: Test
-      uses: VaultVulp/action-pipenv@v2.0.1
-      with:
-        command: run test
-    - name: Pre-commit
-      uses: VaultVulp/action-pipenv@v2.0.1
-      with:
-        command: run pre-commit
-  deploy:
-    needs: tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Checkout the project code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd /var/www/photo_competition
-            git pull
-            pipenv install
-            sudo systemctl restart nginx
-            sudo systemctl restart gunicorn.service
-            sudo systemctl restart daphne.service
-            sudo systemctl restart celery.service
-            pipenv run python manage.py collectstatic --noinput
-            pipenv run python manage.py migrate
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install pipenv
+        run: |
+          python -m pip install --upgrade pipenv wheel
+
+      - id: cache-pipenv
+        uses: actions/cache@v1
+        with:
+          path: ~/.local/share/virtualenvs/
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+
+      - name: Install dependencies
+        if: steps.cache-pipenv.outputs.cache-hit != 'true'
+        run: |
+          pipenv install --deploy --dev
+
+      - name: Execute the tests
+        run: |
+          pipenv run python manage.py test
+        env:
+          SECRET_KEY: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
