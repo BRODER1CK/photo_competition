@@ -47,3 +47,5 @@ python_full_version = "3.12.3"
 [scripts]
 test = "python manage.py test"
 pre-commit = "pre-commit run --all-files"
+redis = "redis-server &"
+celery = "celery -A photo_competition worker -l info --beat &"
