@@ -17,39 +17,6 @@ jobs:
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
         command: install -d
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v2.0
-      with:
-        envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        envkey_DEBUG: ${{ secrets.DEBUG }}
-        envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-        envkey_DB_NAME: ${{ secrets.DB_NAME }}
-        envkey_DB_USER: ${{ secrets.DB_USER }}
-        envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        envkey_DB_HOST: ${{ secrets.DB_HOST }}
-        envkey_DB_PORT: ${{ secrets.DB_PORT }}
-        envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
-        envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
-        envkey_SCHEMA: ${{ secrets.SCHEMA }}
-        envkey_DOMAIN: ${{ secrets.DOMAIN }}
-        envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
-        file_name: .env
-    - name: Setup database
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '14'
-        postgresql db: ${{ secrets.DB_NAME }}
-        postgresql user: ${{ secrets.DB_USER }}
-        postgresql password: ${{ secrets.DB_PASSWORD }}
-    - name: Start PostgreSQL on Ubuntu
-      run: |
-        sudo systemctl start postgresql
-        sudo systemctl enable postgresql
-        pg_isready
-    - name: Test
-      uses: VaultVulp/action-pipenv@v2.0.1
-      with:
-        command: run test
     - name: Pre-commit
       uses: VaultVulp/action-pipenv@v2.0.1
       with:
