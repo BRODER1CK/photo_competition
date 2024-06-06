@@ -25,7 +25,7 @@ jobs:
       PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
 
     services:
-      postgres:
+      database:
         image: postgres
         env:
           POSTGRES_USER: postgres
@@ -38,14 +38,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-
-      redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Check out repository code
@@ -71,7 +63,8 @@ jobs:
           pipenv install --deploy --dev
       - name: Run test
         run: |
-          pipenv run celery
+          pipenv run redis &
+          pipenv run celery &
           pipenv run test
         env:
           TEST_DB_HOST: localhost
