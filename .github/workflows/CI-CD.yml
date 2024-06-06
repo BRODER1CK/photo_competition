@@ -1,52 +1,58 @@
 name: CI/CD
-
-on: [push]
+on: push
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.12.3]
+    timeout-minutes: 10
+
+    services:
+      db_service:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
-      - name: Checkout the project code
+      - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12.3"
 
       - name: Install pipenv
         run: |
           python -m pip install --upgrade pipenv wheel
-
       - id: cache-pipenv
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
-          path: ~/.local/share/virtualenvs/
+          path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
-
-      - name: Execute the tests
+      - name: Run test suite
         run: |
-          pipenv run python manage.py test
+          pipenv run test
         env:
-          SECRET_KEY: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-          DEBUG: True
-          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-          DB_NAME: postgres
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_HOST: localhost
-          DB_PORT: 5432
-          SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
-          SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
-          SCHEMA: ${{ secrets.SCHEMA }}
-          DOMAIN: ${{ secrets.DOMAIN }}
-          PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
+          TEST_DB_HOST: localhost
+          TEST_DB_NAME: postgres
+          TEST_DB_PASS: postgres
+          TEST_DB_PORT: 5432
+          TEST_DB_USER: postgres
+
+      - name: Run linter
+        run: |
+          pipenv run pre-commit
