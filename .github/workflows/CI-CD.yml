@@ -1,76 +1,72 @@
 name: CI/CD
-on: push
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    services:
-      db_service:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12.3'
+    - name: Install dependencies
+      uses: VaultVulp/action-pipenv@v2.0.1
+      with:
+        command: install -d
+    - name: Make envfile
+      uses: SpicyPizza/create-envfile@v2.0
+      with:
+        envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        envkey_DEBUG: ${{ secrets.DEBUG }}
+        envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+        envkey_DB_NAME: postgres
+        envkey_DB_USER: postgres
+        envkey_DB_PASSWORD: postgres
+        envkey_DB_HOST: localhost
+        envkey_DB_PORT: 5432
+        envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
+        envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
+        envkey_SCHEMA: ${{ secrets.SCHEMA }}
+        envkey_DOMAIN: ${{ secrets.DOMAIN }}
+        envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
+        file_name: .env
+    - name: Setup database
+      uses: ikalnytskyi/action-setup-postgres@v6 
+      with:
+        username: postgres
+        password: postgres
+        database: postgres
+        host: localhost
+        port: 5432
+    - name: Test
+      uses: VaultVulp/action-pipenv@v2.0.1
+      with:
+        command: run test
+    - name: Pre-commit
+      uses: VaultVulp/action-pipenv@v2.0.1
+      with:
+        command: run pre-commit
+  deploy:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          python-version: "3.12.3"
-
-      - name: Install pipenv
-        run: |
-          python -m pip install --upgrade pipenv wheel
-      - id: cache-pipenv
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-
-      - name: Make envfile
-        uses: SpicyPizza/create-envfile@v2.0
-        with:
-          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          envkey_DEBUG: ${{ secrets.DEBUG }}
-          envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-          envkey_DB_NAME: postgres
-          envkey_DB_USER: postgres
-          envkey_DB_PASSWORD: postgres
-          envkey_DB_HOST: localhost
-          envkey_DB_PORT: 5432
-          envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
-          envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
-          envkey_SCHEMA: ${{ secrets.SCHEMA }}
-          envkey_DOMAIN: ${{ secrets.DOMAIN }}
-          envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
-          file_name: .env
-
-      - name: Install dependencies
-        if: steps.cache-pipenv.outputs.cache-hit != 'true'
-        run: |
-          pipenv install --deploy --dev
-      - name: Run test suite
-        run: |
-          pipenv run test
-        env:
-          TEST_DB_HOST: localhost
-          TEST_DB_NAME: postgres
-          TEST_DB_PASS: postgres
-          TEST_DB_PORT: 5432
-          TEST_DB_USER: postgres
-
-      - name: Run linter
-        run: |
-          pipenv run pre-commit
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /var/www/photo_competition
+            git pull
+            pipenv install
+            sudo systemctl restart nginx
+            sudo systemctl restart gunicorn.service
+            sudo systemctl restart daphne.service
+            sudo systemctl restart celery.service
+            pipenv run python manage.py collectstatic --noinput
+            pipenv run python manage.py migrate
