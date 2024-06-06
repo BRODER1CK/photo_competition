@@ -32,7 +32,8 @@ class CommentListService(ServiceWithResult):
         elif self.cleaned_data["content_type"] == "Comment":
             return (
                 Comment.objects.filter(
-                    id=self.cleaned_data["object_id"], content_type_id=content_type_id
+                    object_id=self.cleaned_data["object_id"],
+                    content_type_id=content_type_id,
                 )
                 .prefetch_related("comments")
                 .select_related("user", "content_type")
