@@ -8,7 +8,7 @@ on:
       - master
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,3 +27,23 @@ jobs:
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
           command: run test
+  deploy:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /var/www/photo_competition
+            git pull
+            pipenv install
+            sudo systemctl restart nginx
+            sudo systemctl restart gunicorn.service
+            sudo systemctl restart daphne.service
+            sudo systemctl restart celery.service
+            pipenv run python manage.py collectstatic --noinput
+            pipenv run python manage.py migrate
