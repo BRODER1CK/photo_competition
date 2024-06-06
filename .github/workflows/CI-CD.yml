@@ -1,70 +1,72 @@
-name: Example CI Django & Postgres Tests
+name: CI/CD
 
-# Controls when the workflow will run
 on:
-  # Allows you to call this workflow within another workflow
-  workflow_call:
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  test:
     runs-on: ubuntu-latest
-    # Add in environment variables for the entire "build" job
-    defaults:
-      run:
-        working-directory: ./web
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_HOST: localhost # default host value for the database
-      POSTGRES_DB: djtesting
-      POSTGRES_PORT: 5432
-      DJANGO_SECRET_KEY: test-key-not-good
-    services:
-      postgres_main:
-        image: postgres:12
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
-    # If you want to test multiple python version(s)
-    strategy:
-      matrix:
-        python-version: ["3.12.3"]
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout code
-        uses: actions/checkout@master
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@master
+    - uses: actions/checkout@master
+    - uses: actions/setup-python@master
+      with:
+        python-version: '3.12.3'
+    - name: Install dependencies
+      uses: VaultVulp/action-pipenv@master
+      with:
+        command: install -d
+    - name: Make envfile
+      uses: SpicyPizza/create-envfile@master
+      with:
+        envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        envkey_DEBUG: ${{ secrets.DEBUG }}
+        envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+        envkey_DB_NAME: ${{ secrets.DB_NAME }}
+        envkey_DB_USER: ${{ secrets.DB_USER }}
+        envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        envkey_DB_HOST: ${{ secrets.DB_HOST }}
+        envkey_DB_PORT: ${{ secrets.DB_PORT }}
+        envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
+        envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
+        envkey_SCHEMA: ${{ secrets.SCHEMA }}
+        envkey_DOMAIN: ${{ secrets.DOMAIN }}
+        envkey_PHOTO_DELETE_TIME_SECONDS: ${{ secrets.PHOTO_DELETE_TIME_SECONDS }}
+        file_name: .env
+    - name: Setup database
+      uses: ikalnytskyi/action-setup-postgres@v6 
+      with:
+        username: ${{ secrets.DB_USER }}
+        password: ${{ secrets.DB_PASSWORD }}
+        database: ${{ secrets.DB_NAME }}
+        host: ${{ secrets.DB_HOST }}
+        port: ${{ secrets.DB_PORT }}
+    - name: Test
+      uses: VaultVulp/action-pipenv@master
+      with:
+        command: run test
+    - name: Pre-commit
+      uses: VaultVulp/action-pipenv@master
+      with:
+        command: run pre-commit
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-         command: install -d
-      - name: Test
-        uses: VaultVulp/action-pipenv@v2.0.1
-        env:
-          DEBUG: "0"
-          POSTGRES_READY: "0"
-          DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ env.POSTGRES_PORT }}
-        with:
-         command: run test
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /var/www/photo_competition
+            git pull
+            pipenv install
+            sudo systemctl restart nginx
+            sudo systemctl restart gunicorn.service
+            sudo systemctl restart daphne.service
+            sudo systemctl restart celery.service
+            pipenv run python manage.py collectstatic --noinput
+            pipenv run python manage.py migrate
