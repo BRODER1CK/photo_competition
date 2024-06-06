@@ -68,7 +68,7 @@ jobs:
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
-          pipenv install --deploy --dev
+          pipenv install -d
       - name: Run test
         run: |
           pipenv run celery &
