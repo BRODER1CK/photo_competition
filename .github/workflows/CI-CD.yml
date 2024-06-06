@@ -1,39 +1,70 @@
-name: Test Workflow
+name: Example CI Django & Postgres Tests
 
-on: push 
+# Controls when the workflow will run
+on:
+  # Allows you to call this workflow within another workflow
+  workflow_call:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
- test:
-   runs-on: ubuntu-latest
-   
-   services:
-    image: postgres
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Add in environment variables for the entire "build" job
+    defaults:
+      run:
+        working-directory: ./web
     env:
-    - POSTGRES_USER: postgres
-    - POSTGRES_PASSWORD: postgres
-    - POSTGRES_BD: postgres
-    ports:
-    - 5432:5432
-    options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-   
-   steps:
-   - uses: actions/checkout@master
-   - name: Set up Python
-   - uses: actions/setup-python@master
-     with:
-      python-version: 3.12
-
-   - name: Install dependencies
-   - uses: VaultVulp/action-pipenv@master
-     with:
-      command: install -d
-   - name: Test
-   - uses: VaultVulp/action-pipenv@master
-     env:
-        PG_HOST: postgres
-        PG_USER: postgres
-        PG_DATABASE: postgres
-        PG_PASSWORD: postgres
-        PG_PORT: ${{ job.services.postgres.ports['5432'] }}
-     with:
-        command: run test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: localhost # default host value for the database
+      POSTGRES_DB: djtesting
+      POSTGRES_PORT: 5432
+      DJANGO_SECRET_KEY: test-key-not-good
+    services:
+      postgres_main:
+        image: postgres:12
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+    # If you want to test multiple python version(s)
+    strategy:
+      matrix:
+        python-version: ["3.12.3"]
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@master
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        uses: VaultVulp/action-pipenv@v2.0.1
+        with:
+         command: install -d
+      - name: Test
+        uses: VaultVulp/action-pipenv@v2.0.1
+        env:
+          DEBUG: "0"
+          POSTGRES_READY: "0"
+          DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ env.POSTGRES_PORT }}
+        with:
+         command: run test
