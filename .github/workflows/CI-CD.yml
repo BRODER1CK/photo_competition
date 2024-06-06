@@ -71,6 +71,7 @@ jobs:
           pipenv install --deploy --dev
       - name: Run test
         run: |
+          pipenv run celery
           pipenv run test
         env:
           TEST_DB_HOST: localhost
