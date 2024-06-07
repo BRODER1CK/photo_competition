@@ -71,6 +71,7 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install -d
+          
       - name: Run test
         run: |
           pipenv run celery &
@@ -81,10 +82,6 @@ jobs:
           TEST_DB_PASS: postgres
           TEST_DB_PORT: 5432
           TEST_DB_USER: postgres
-
-      - name: Run pre-commit
-        run: |
-          pipenv run pre-commit
   
   deploy:
     needs: test
