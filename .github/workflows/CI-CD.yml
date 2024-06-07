@@ -82,15 +82,11 @@ jobs:
           TEST_DB_PASS: postgres
           TEST_DB_PORT: 5432
           TEST_DB_USER: postgres
-<<<<<<< Updated upstream
-  
-=======
-
+          
       - name: Run pre-commit
         run: |
           pipenv run pre-commit
-
->>>>>>> Stashed changes
+          
   deploy:
     needs: test
     runs-on: ubuntu-latest
