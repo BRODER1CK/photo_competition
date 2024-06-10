@@ -42,7 +42,7 @@ isort = "*"
 
 [requires]
 python_version = "3.12"
-python_full_version = "3.12.4"
+python_full_version = "3.12.3"
 
 [scripts]
 test = "python manage.py test"
